@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.pedro.PedroConstants;
 
@@ -24,11 +25,14 @@ public class Robot {
 
     //hardware
     public final DcMotorEx launcher;
-    public final DcMotor intake;
-    public final CRServo leftIntakeServo;
-    public final CRServo rightIntakeServo;
-    public final CRServo windmillServo;
-
+    public final DcMotorEx launcher2;
+    public final DcMotor intake_transfer;
+    public final Servo left_ramp_servo;
+    public final Servo right_ramp_servo;
+    public final Servo left_blocker;
+    public final Servo right_blocker;
+    public final Servo left_flower;
+    public final Servo right_flower;
 
 
 
@@ -54,23 +58,28 @@ public class Robot {
 
 
         // ----- Non-drivetrain hardware init -----
-        intake = hw.get(DcMotor.class, "intake");
+        intake_transfer = hw.get(DcMotor.class, "intake_transfer");
+
         launcher = hw.get(DcMotorEx.class, "launcher");
-        windmillServo = hw.get(CRServo.class, "windmillServo");
-        leftIntakeServo = hw.get(CRServo.class, "left_intake_servo");
-        rightIntakeServo = hw.get(CRServo.class, "right_intake_servo");
+        launcher2 = hw.get(DcMotorEx.class, "launcher2");
+
+        left_flower = hw.get(Servo.class, "left_flower");
+        right_flower = hw.get(Servo.class, "right_flower");
+
+        left_ramp_servo = hw.get(Servo.class, "left_ramp_servo");
+        right_ramp_servo = hw.get(Servo.class, "right_ramp_servo");
+
+        left_blocker = hw.get(Servo.class, "left_blocker");
+        right_blocker = hw.get(Servo.class, "right_blocker");
 
 
-        intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        intake_transfer.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         launcher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         launcher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(40, 0, 0, 12.5));
 
-        leftIntakeServo.setPower(0);
-        rightIntakeServo.setPower(0);
-        windmillServo.setPower(0);
-
-        rightIntakeServo.setDirection(DcMotorSimple.Direction.REVERSE);
+        left_ramp_servo.setPosition(0.0/300);
+        right_ramp_servo.setPosition(0.0/300);
         // -----------------------------------------
 
         loop.reset();

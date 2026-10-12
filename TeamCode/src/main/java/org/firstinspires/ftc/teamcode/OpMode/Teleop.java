@@ -29,6 +29,9 @@ public class Teleop extends OpMode {
 
     boolean intakeOn = false;
     boolean reverseOn = false;
+    boolean ramp = false;
+    boolean left_flower = false;
+    boolean right_flower = false;
 
 
 
@@ -47,8 +50,14 @@ public class Teleop extends OpMode {
         Scheduler.reset();
         robot.follower.setPose(Start);
         telemetry.addData("Status", "Initialized");
-        //Driver 1: Intake, Heading lock, Drive
+        //Driver 1: Intake, Heading lock, Drive, Ramp
         //Driver 2: Shoot
+        //Intake/transfer on one motor
+        //Each shooter has a different motor
+        //drivetrain Parelle plate
+        //different servo on each side to unblock shooter
+        //Deflector on 2 servos
+        //Flower take using 2 servos
     }
 
     @Override
@@ -83,6 +92,7 @@ public class Teleop extends OpMode {
         Scheduler.execute(); // runs anything scheduled — nothing's scheduled yet, but it's plugged in and ready
 
         robot.launcher.setVelocity(LAUNCHER_TARGET_VELOCITY);
+        robot.launcher2.setVelocity(LAUNCHER_TARGET_VELOCITY);
 
 
         if (gamepad1.rightTriggerWasPressed()){
@@ -92,6 +102,7 @@ public class Teleop extends OpMode {
         if (gamepad1.rightBumperWasPressed()) {
             headingLock = !headingLock;
         }
+
         double turnPower;
         if(headingLock) {
             double dx;
@@ -134,36 +145,57 @@ public class Teleop extends OpMode {
                 reverseOn = false;
             }
         }
-        // Reverse toggle
-        if (gamepad1.leftTriggerWasPressed()) {
-            reverseOn = !reverseOn;
-            if (reverseOn) {
-                intakeOn = false;
-            }
+
+        if(gamepad1.yWasPressed()){
+            ramp = !ramp;
+        }
+
+        if(ramp){
+            robot.right_ramp_servo.setPosition(90/300.0);
+            robot.left_ramp_servo.setPosition(90/300.0);
+        } else if (!ramp) {
+            robot.right_ramp_servo.setPosition(0/300.0);
+            robot.left_ramp_servo.setPosition(0/300.0);
         }
 
         if (intakeOn) {
-            robot.intake.setPower(INTAKE_FORWARD);
-            robot.leftIntakeServo.setPower(INTAKE_FORWARD);
-            robot.rightIntakeServo.setPower(INTAKE_FORWARD);
-        } else if (reverseOn) {
-            robot.intake.setPower(INTAKE_REVERSE);
-            robot.leftIntakeServo.setPower(INTAKE_REVERSE);
-            robot.rightIntakeServo.setPower(INTAKE_REVERSE);
+            robot.intake_transfer.setPower(INTAKE_FORWARD);
+        } else if (gamepad1.leftBumperWasPressed()) {
+            robot.intake_transfer.setPower(INTAKE_REVERSE);
         } else {
-            robot.intake.setPower(0);
-            robot.leftIntakeServo.setPower(0);
-            robot.rightIntakeServo.setPower(0);
+            robot.intake_transfer.setPower(0);
         }
 
 
-
-        if (gamepad1.y) {
-            robot.windmillServo.setPower(1);
-            robot.intake.setPower(INTAKE_FORWARD);
-        } else {
-            robot.windmillServo.setPower(0);
+        if(gamepad2.left_bumper){
+            robot.left_blocker.setPosition(90/300.0);
+            robot.intake_transfer.setPower(INTAKE_FORWARD);
         }
+        if(gamepad2.right_bumper){
+            robot.right_blocker.setPosition(90/300.0);
+            robot.intake_transfer.setPower(INTAKE_FORWARD);
+        }
+
+        if(gamepad2.leftTriggerWasPressed()){
+            left_flower = !left_flower;
+        }
+        if(gamepad2.rightTriggerWasPressed())
+        {
+            right_flower = !right_flower;
+        }
+
+        if(left_flower){
+            robot.left_flower.setPosition(90/300.0);
+        } else if (!left_flower) {
+            robot.left_flower.setPosition(0/300.0);
+        }
+
+        if(right_flower){
+            robot.right_flower.setPosition(90/300.0);
+        } else if (!right_flower) {
+            robot.right_flower.setPosition(0/300.0);
+        }
+
 
         // Telemetry
         telemetry.addData("Triggers", "left (%.2f), right (%.2f)", gamepad1.left_trigger, gamepad1.right_trigger);
