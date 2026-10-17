@@ -7,9 +7,12 @@ public class Constants {
     public static final double INTAKE_FORWARD = 1.0;
     public static final double INTAKE_REVERSE = -0.5;
 
+    public static final double GATE_OPEN = 90.0/300.0;
+    public static final double GATE_CLOSE = 0.0/300.0;
+
     // ─── Goal pose [x_inches, y_inches] (Pedro field coords) ─────────────────
     // Blue alliance default — mirrored for Red in TeleOp initialize()
-    public static double[] GOAL_POSE_BLUE = {84.0,  95.0};//-50 For the other side
+    public static double[] GOAL_POSE_BLUE = {88.0,  47.0};//-50 For the other side
     public static double[] GOAL_POSE_RED  = {58.0, 47.0};//-50 for the other side
 
     public static double OTHERSIDE;

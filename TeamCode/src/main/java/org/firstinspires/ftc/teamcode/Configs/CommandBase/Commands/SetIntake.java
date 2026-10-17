@@ -12,27 +12,21 @@ import org.firstinspires.ftc.teamcode.Configs.Globals.Constants.*;
 
 public class SetIntake {
 
-    public static Command create(Intake intake, Robot robot, boolean reverse) {
+    public static Command forward(Intake intake) {
         return sequential(
-                instant(() -> {
-                    if (reverse) {
-                        intake.turnOnReverse();
-                        robot.leftIntakeServo.setPower(1);
-                        robot.rightIntakeServo.setPower(1);
-                    } else {
-                        intake.turnOn();
-                        intake.turnOnReverse();
-                        robot.leftIntakeServo.setPower(-1);
-                        robot.rightIntakeServo.setPower(-1);
-                    }
-                }),
+                instant(intake::turnOn)
+        );
+    }
 
-                waitMs(500),
-                instant(() -> {
-                    robot.intake.setPower(0);
-                    robot.leftIntakeServo.setPower(0);
-                    robot.rightIntakeServo.setPower(0);
-                })
+    public static Command reverse(Intake intake) {
+        return sequential(
+                instant(intake::turnOnReverse)
+        );
+    }
+
+    public static Command stop(Intake intake) {
+        return sequential(
+                instant(intake::stop)
         );
     }
 }

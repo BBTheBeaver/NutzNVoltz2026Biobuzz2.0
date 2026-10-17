@@ -11,6 +11,9 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
+import static org.firstinspires.ftc.teamcode.Configs.Globals.Constants.*;
+
+
 
 import org.firstinspires.ftc.teamcode.pedro.PedroConstants;
 
@@ -29,8 +32,8 @@ public class Robot {
     public final DcMotor intake_transfer;
     public final Servo left_ramp_servo;
     public final Servo right_ramp_servo;
-    public final Servo left_blocker;
-    public final Servo right_blocker;
+    public final Servo left_gate;
+    public final Servo right_gate;
     public final Servo left_flower;
     public final Servo right_flower;
 
@@ -69,8 +72,8 @@ public class Robot {
         left_ramp_servo = hw.get(Servo.class, "left_ramp_servo");
         right_ramp_servo = hw.get(Servo.class, "right_ramp_servo");
 
-        left_blocker = hw.get(Servo.class, "left_blocker");
-        right_blocker = hw.get(Servo.class, "right_blocker");
+        left_gate = hw.get(Servo.class, "left_blocker");
+        right_gate = hw.get(Servo.class, "right_blocker");
 
 
         intake_transfer.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -78,8 +81,8 @@ public class Robot {
         launcher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         launcher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(40, 0, 0, 12.5));
 
-        left_ramp_servo.setPosition(0.0/300);
-        right_ramp_servo.setPosition(0.0/300);
+        left_ramp_servo.setPosition(SHOOT_SERVO_POSITION_CLOSE);
+        right_ramp_servo.setPosition(SHOOT_SERVO_POSITION_CLOSE);
         // -----------------------------------------
 
         loop.reset();

@@ -9,6 +9,10 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.pedropathing.controllers.PIDController;
 
+import org.firstinspires.ftc.teamcode.Configs.CommandBase.Commands.SpinFlywheel;
+import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Flywheel;
+import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Intake;
+import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Ramp;
 import org.firstinspires.ftc.teamcode.Configs.Globals.Robot;
 
 import java.util.Objects;
@@ -40,6 +44,9 @@ public class Teleop extends OpMode {
     boolean upLast = false;
     boolean downLast = false;
 
+    Flywheel flywheel;
+    Flywheel flywheel2;
+
 
 
 
@@ -48,8 +55,12 @@ public class Teleop extends OpMode {
     public void init() {
         robot = new Robot(hardwareMap);
         Scheduler.reset();
-        robot.follower.setPose(Start);
         telemetry.addData("Status", "Initialized");
+
+        flywheel = new Flywheel(robot.launcher);
+        flywheel2 = new Flywheel(robot.launcher2);
+
+
         //Driver 1: Intake, Heading lock, Drive, Ramp
         //Driver 2: Shoot
         //Intake/transfer on one motor
@@ -80,8 +91,10 @@ public class Teleop extends OpMode {
         boolean isBlue = Objects.equals(options[selectedOption], "Blue");
         if (isBlue) {
             goalPose = GOAL_POSE_BLUE;
+            robot.follower.setPose(BLUE_START);
         } else {
             goalPose = GOAL_POSE_RED;
+            robot.follower.setPose(RED_START);
         }
 
     }
@@ -91,8 +104,8 @@ public class Teleop extends OpMode {
         robot.periodic();
         Scheduler.execute(); // runs anything scheduled — nothing's scheduled yet, but it's plugged in and ready
 
-        robot.launcher.setVelocity(LAUNCHER_TARGET_VELOCITY);
-        robot.launcher2.setVelocity(LAUNCHER_TARGET_VELOCITY);
+        SpinFlywheel.create(flywheel);
+        SpinFlywheel.create(flywheel2);
 
 
         if (gamepad1.rightTriggerWasPressed()){
@@ -168,11 +181,11 @@ public class Teleop extends OpMode {
 
 
         if(gamepad2.left_bumper){
-            robot.left_blocker.setPosition(90/300.0);
+            robot.left_gate.setPosition(90/300.0);
             robot.intake_transfer.setPower(INTAKE_FORWARD);
         }
         if(gamepad2.right_bumper){
-            robot.right_blocker.setPosition(90/300.0);
+            robot.right_gate.setPosition(90/300.0);
             robot.intake_transfer.setPower(INTAKE_FORWARD);
         }
 

@@ -8,23 +8,50 @@ import static org.firstinspires.ftc.teamcode.Configs.Globals.Constants.*;
 
 import com.pedropathing.ivy.Command;
 
+import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Gate;
 import org.firstinspires.ftc.teamcode.Configs.Globals.Robot;
-import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Flywheel;
+
+import java.util.function.BooleanSupplier;
 
 public class Shoot {
 
-    public static Command create(Flywheel flywheel, Robot robot) {
+    // Auto — fixed duration, no outside input
+    public static Command auto(Gate gate, Robot robot) {
         return sequential(
                 instant(() -> {
-                    robot.windmillServo.setPower(1);
-                    robot.intake.setPower(INTAKE_FORWARD);
+                    gate.left_gate_open();
+                    gate.right_gate_open();
+                    robot.intake_transfer.setPower(INTAKE_FORWARD);
                 }),
 
                 waitMs(2000),
 
                 instant(() -> {
-                    robot.windmillServo.setPower(0);
-                    robot.intake.setPower(0);
+                    gate.left_gate_close();
+                    gate.right_gate_close();
+                    robot.intake_transfer.setPower(0);
+                })
+        );
+    }
+
+    // Teleop — runs for as long as "held" keeps returning true
+    public static Command whileHeld(Gate gate, Robot robot, BooleanSupplier held, boolean pollen) {
+        return sequential(
+                instant(() -> {
+                    if (pollen) {
+                        gate.right_gate_open();
+                    } else {
+                        gate.left_gate_open();
+                    }
+                    robot.intake_transfer.setPower(INTAKE_FORWARD);
+                }),
+
+                waitUntil(() -> !held.getAsBoolean()),
+
+                instant(() -> {
+                    gate.left_gate_close();
+                    gate.right_gate_close();
+                    robot.intake_transfer.setPower(0);
                 })
         );
     }
