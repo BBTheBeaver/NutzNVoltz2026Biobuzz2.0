@@ -14,16 +14,16 @@ public class Intake {
     }
 
     // Turns on the intake
-    public void turnOn() {
+    public void on() {
         motor.setPower(INTAKE_FORWARD);
     }
 
-    public void turnOnReverse(){
+    public void reverse(){
         motor.setPower(INTAKE_REVERSE);
     }
 
     // Stops the intake
-    public void stop() {
+    public void off() {
         motor.setPower(0);
     }
 }

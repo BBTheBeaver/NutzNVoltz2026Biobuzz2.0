@@ -20,6 +20,7 @@ import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Flywheel;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Gate;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Intake;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Ramp;
+import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Transfer;
 import org.firstinspires.ftc.teamcode.Configs.Globals.Robot;
 
 public class SoloAuto implements AutoRoutine {
@@ -44,15 +45,15 @@ public class SoloAuto implements AutoRoutine {
 
     @Override
     public Command build(Robot robot) {
-        Flywheel flywheel = new Flywheel(robot.launcher);
-        Flywheel flywheel2 = new Flywheel(robot.launcher2);
-        Intake intake = new Intake(robot.intake_transfer);
+        Flywheel flywheel = new Flywheel(robot.flywheel);
+        Intake intake = new Intake(robot.intake);
+        Transfer transfer = new Transfer(robot.transfer);
         Ramp ramp = new Ramp(robot.left_ramp_servo, robot.right_ramp_servo);
-        Gate gate = new Gate(robot.left_gate, robot.right_gate);
+        Gate gate = new Gate(robot.gate);
 
         return deadline(
                 sequential(
-                        Shoot.auto(gate, robot),
+                        Shoot.auto(gate, intake, transfer),
 
                         parallel(
                                 SetIntake.forward(intake),
@@ -60,7 +61,7 @@ public class SoloAuto implements AutoRoutine {
                         ),
 
                         follow(robot.follower, SHOOT()),
-                        Shoot.auto(gate, robot),
+                        Shoot.auto(gate, intake, transfer),
 
                         parallel(
                                 SetRamp.down(ramp),
@@ -74,7 +75,7 @@ public class SoloAuto implements AutoRoutine {
 
                         ),
 
-                        Shoot.auto(gate, robot),
+                        Shoot.auto(gate, intake, transfer),
 
 
                         parallel(
@@ -89,12 +90,11 @@ public class SoloAuto implements AutoRoutine {
 
                         ),
 
-                        Shoot.auto(gate, robot),
+                        Shoot.auto(gate, intake, transfer),
 
                         follow(robot.follower, PARK())
                 ),
-                SpinFlywheel.create(flywheel),
-                SpinFlywheel.create(flywheel2)
+                SpinFlywheel.on(flywheel)
         );
     }
 

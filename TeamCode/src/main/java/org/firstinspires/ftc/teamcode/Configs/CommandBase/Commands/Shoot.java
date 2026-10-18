@@ -9,6 +9,8 @@ import static org.firstinspires.ftc.teamcode.Configs.Globals.Constants.*;
 import com.pedropathing.ivy.Command;
 
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Gate;
+import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Intake;
+import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Transfer;
 import org.firstinspires.ftc.teamcode.Configs.Globals.Robot;
 
 import java.util.function.BooleanSupplier;
@@ -16,42 +18,40 @@ import java.util.function.BooleanSupplier;
 public class Shoot {
 
     // Auto — fixed duration, no outside input
-    public static Command auto(Gate gate, Robot robot) {
+    public static Command auto(Gate gate, Intake intake, Transfer transfer) {
         return sequential(
                 instant(() -> {
-                    gate.left_gate_open();
-                    gate.right_gate_open();
-                    robot.intake_transfer.setPower(INTAKE_FORWARD);
+                    gate.open();
+                    transfer.on();
+                    intake.on();
+
                 }),
 
-                waitMs(2000),
+                waitMs(1500),
 
                 instant(() -> {
-                    gate.left_gate_close();
-                    gate.right_gate_close();
-                    robot.intake_transfer.setPower(0);
+                    gate.close();
+                    transfer.off();
+                    intake.off();
                 })
         );
     }
 
     // Teleop — runs for as long as "held" keeps returning true
-    public static Command whileHeld(Gate gate, Robot robot, BooleanSupplier held, boolean pollen) {
+    public static Command whileHeld(Gate gate, Intake intake, Transfer transfer, BooleanSupplier held) {
         return sequential(
                 instant(() -> {
-                    if (pollen) {
-                        gate.right_gate_open();
-                    } else {
-                        gate.left_gate_open();
-                    }
-                    robot.intake_transfer.setPower(INTAKE_FORWARD);
+                    gate.open();
+                    intake.on();
+                    transfer.on();
                 }),
 
                 waitUntil(() -> !held.getAsBoolean()),
 
                 instant(() -> {
-                    gate.left_gate_close();
-                    gate.right_gate_close();
-                    robot.intake_transfer.setPower(0);
+                    gate.close();
+                    intake.off();
+                    transfer.off();
                 })
         );
     }

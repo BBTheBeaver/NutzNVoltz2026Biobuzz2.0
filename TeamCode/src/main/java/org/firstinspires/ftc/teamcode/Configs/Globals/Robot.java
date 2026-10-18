@@ -27,15 +27,12 @@ public class Robot {
     public double loops = 0, lastloop = 0, loopTime = 0;
 
     //hardware
-    public final DcMotorEx launcher;
-    public final DcMotorEx launcher2;
-    public final DcMotor intake_transfer;
+    public final DcMotorEx flywheel;
+    public final DcMotor intake;
+    public final DcMotor transfer;
     public final Servo left_ramp_servo;
     public final Servo right_ramp_servo;
-    public final Servo left_gate;
-    public final Servo right_gate;
-    public final Servo left_flower;
-    public final Servo right_flower;
+    public final Servo gate;
 
 
 
@@ -61,28 +58,26 @@ public class Robot {
 
 
         // ----- Non-drivetrain hardware init -----
-        intake_transfer = hw.get(DcMotor.class, "intake_transfer");
+        intake = hw.get(DcMotor.class, "intake");
+        transfer = hw.get(DcMotor.class, "transfer");
 
-        launcher = hw.get(DcMotorEx.class, "launcher");
-        launcher2 = hw.get(DcMotorEx.class, "launcher2");
-
-        left_flower = hw.get(Servo.class, "left_flower");
-        right_flower = hw.get(Servo.class, "right_flower");
+        flywheel = hw.get(DcMotorEx.class, "flywheel");
 
         left_ramp_servo = hw.get(Servo.class, "left_ramp_servo");
         right_ramp_servo = hw.get(Servo.class, "right_ramp_servo");
 
-        left_gate = hw.get(Servo.class, "left_blocker");
-        right_gate = hw.get(Servo.class, "right_blocker");
+        gate = hw.get(Servo.class, "gate");
 
 
-        intake_transfer.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        transfer.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        launcher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        launcher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(40, 0, 0, 12.5));
+        flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        left_ramp_servo.setPosition(SHOOT_SERVO_POSITION_CLOSE);
-        right_ramp_servo.setPosition(SHOOT_SERVO_POSITION_CLOSE);
+        gate.setPosition(GATE_CLOSE);
+
+        left_ramp_servo.setPosition(RAMP_UP);
+        right_ramp_servo.setPosition(RAMP_UP);
         // -----------------------------------------
 
         loop.reset();

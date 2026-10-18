@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Configs.Autos;
 
 import static com.pedropathing.api.Paths.*;
+import static com.pedropathing.ivy.groups.Groups.deadline;
 import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
@@ -13,11 +14,13 @@ import com.pedropathing.paths.Path;
 
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.Commands.SetIntake;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.Commands.SetRamp;
+import org.firstinspires.ftc.teamcode.Configs.CommandBase.Commands.SpinFlywheel;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.Commands.Shoot;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Flywheel;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Gate;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Intake;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Ramp;
+import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Transfer;
 import org.firstinspires.ftc.teamcode.Configs.Globals.Robot;
 
 import java.util.Set;
@@ -42,29 +45,34 @@ public class FarAuto implements AutoRoutine{
 
     @Override
     public Command build(Robot robot) {
-        Intake intake = new Intake(robot.intake_transfer);
+        Flywheel flywheel = new Flywheel(robot.flywheel);
+        Intake intake = new Intake(robot.intake);
+        Transfer transfer = new Transfer(robot.transfer);
         Ramp ramp = new Ramp(robot.left_ramp_servo, robot.right_ramp_servo);
-        Gate gate = new Gate(robot.left_gate, robot.right_gate);
+        Gate gate = new Gate(robot.gate);
 
-        return sequential(
-                Shoot.auto(gate, robot),
+        return deadline(
+            sequential(
+                    Shoot.auto(gate, intake, transfer),
 
-                parallel(
-                        SetRamp.down(ramp),
-                        SetIntake.forward(intake),
-                        follow(robot.follower, FLOWER())
+                    parallel(
+                            SetRamp.down(ramp),
+                            SetIntake.forward(intake),
+                            follow(robot.follower, FLOWER())
 
-                ),
+                    ),
 
-                parallel(
-                        follow(robot.follower, SHOOT()),
-                        SetRamp.up(ramp)
-                ),
+                    parallel(
+                            follow(robot.follower, SHOOT()),
+                            SetRamp.up(ramp)
+                    ),
 
-                Shoot.auto(gate, robot),
+                    Shoot.auto(gate, intake, transfer),
 
 
-                follow(robot.follower, PARK())
+                    follow(robot.follower, PARK())
+            ),
+                SpinFlywheel.on(flywheel)
         );
     }
 

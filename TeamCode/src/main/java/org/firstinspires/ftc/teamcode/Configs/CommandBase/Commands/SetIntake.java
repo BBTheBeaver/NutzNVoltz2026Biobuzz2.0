@@ -14,19 +14,19 @@ public class SetIntake {
 
     public static Command forward(Intake intake) {
         return sequential(
-                instant(intake::turnOn)
+                instant(intake::on)
         );
     }
 
     public static Command reverse(Intake intake) {
         return sequential(
-                instant(intake::turnOnReverse)
+                instant(intake::reverse)
         );
     }
 
     public static Command stop(Intake intake) {
         return sequential(
-                instant(intake::stop)
+                instant(intake::off)
         );
     }
 }

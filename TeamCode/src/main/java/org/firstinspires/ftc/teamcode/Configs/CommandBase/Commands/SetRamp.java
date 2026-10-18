@@ -12,13 +12,13 @@ import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Ramp;
 public class SetRamp {
     public static Command down(Ramp ramp) {
         return sequential(
-                instant(ramp::setDown)
+                instant(ramp::down)
         );
     }
 
     public static Command up(Ramp ramp){
         return sequential(
-                instant(ramp::setUp)
+                instant(ramp::up)
         );
     }
 }

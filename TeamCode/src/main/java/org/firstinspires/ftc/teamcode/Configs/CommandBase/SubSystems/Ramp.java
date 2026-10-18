@@ -19,14 +19,14 @@ public class Ramp {
     }
 
     // Turns on the intake
-    public void setDown() {
-        servo.setPosition(90.0/300.0);
-        servo2.setPosition(90.0/300.0);
+    public void down() {
+        servo.setPosition(RAMP_DOWN);
+        servo2.setPosition(RAMP_DOWN);
     }
 
-    public void setUp (){
-        servo.setPosition(0.0/300.0);
-        servo2.setPosition(0.0/300.0);
+    public void up (){
+        servo.setPosition(RAMP_UP);
+        servo2.setPosition(RAMP_UP);
     }
 
 }

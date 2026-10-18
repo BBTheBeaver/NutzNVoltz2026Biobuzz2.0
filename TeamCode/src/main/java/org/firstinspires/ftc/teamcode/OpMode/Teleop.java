@@ -9,10 +9,17 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.pedropathing.controllers.PIDController;
 
-import org.firstinspires.ftc.teamcode.Configs.CommandBase.Commands.SpinFlywheel;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Flywheel;
+import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Gate;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Intake;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Ramp;
+
+import org.firstinspires.ftc.teamcode.Configs.CommandBase.Commands.SetRamp;
+import org.firstinspires.ftc.teamcode.Configs.CommandBase.Commands.SpinFlywheel;
+import org.firstinspires.ftc.teamcode.Configs.CommandBase.Commands.Shoot;
+import org.firstinspires.ftc.teamcode.Configs.CommandBase.Commands.SetIntake;
+
+import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Transfer;
 import org.firstinspires.ftc.teamcode.Configs.Globals.Robot;
 
 import java.util.Objects;
@@ -20,7 +27,6 @@ import java.util.Objects;
 @TeleOp(name = "Teleop", group = "StarterBot")
 //@Disabled
 public class Teleop extends OpMode {
-    Robot robot;
 
     boolean otherSide = false;
     double headingError   = 0;
@@ -33,7 +39,7 @@ public class Teleop extends OpMode {
 
     boolean intakeOn = false;
     boolean reverseOn = false;
-    boolean ramp = false;
+    boolean ramp_on = false;
     boolean left_flower = false;
     boolean right_flower = false;
 
@@ -44,8 +50,12 @@ public class Teleop extends OpMode {
     boolean upLast = false;
     boolean downLast = false;
 
+    Robot robot;
     Flywheel flywheel;
-    Flywheel flywheel2;
+    Intake intake;
+    Transfer transfer;
+    Ramp ramp;
+    Gate gate;
 
 
 
@@ -57,8 +67,11 @@ public class Teleop extends OpMode {
         Scheduler.reset();
         telemetry.addData("Status", "Initialized");
 
-        flywheel = new Flywheel(robot.launcher);
-        flywheel2 = new Flywheel(robot.launcher2);
+        flywheel = new Flywheel(robot.flywheel);
+        intake = new Intake(robot.intake);
+        transfer = new Transfer(robot.transfer);
+        ramp = new Ramp(robot.left_ramp_servo, robot.right_ramp_servo);
+        gate = new Gate(robot.gate);
 
 
         //Driver 1: Intake, Heading lock, Drive, Ramp
@@ -104,10 +117,10 @@ public class Teleop extends OpMode {
         robot.periodic();
         Scheduler.execute(); // runs anything scheduled — nothing's scheduled yet, but it's plugged in and ready
 
-        SpinFlywheel.create(flywheel);
-        SpinFlywheel.create(flywheel2);
+        SpinFlywheel.on(flywheel);
 
 
+        //region Heading Lock
         if (gamepad1.rightTriggerWasPressed()){
             otherSide = !otherSide;
         }
@@ -149,9 +162,22 @@ public class Teleop extends OpMode {
         );
 
         robot.follower.manual(powers);
+        //endregion
 
 
-        // Intake toggle
+        //region Shoot
+        if(gamepad1.y)
+        {
+            gate.open();
+            intake.on();
+            transfer.on();
+            //schedule(Shoot.whileHeld(gate, intake, transfer, () -> gamepad1.y));
+        }
+        //endregion
+
+
+
+        //region Intake
         if (gamepad1.leftBumperWasPressed()) {
             intakeOn = !intakeOn;
             if (intakeOn) {
@@ -159,55 +185,30 @@ public class Teleop extends OpMode {
             }
         }
 
-        if(gamepad1.yWasPressed()){
-            ramp = !ramp;
-        }
-
-        if(ramp){
-            robot.right_ramp_servo.setPosition(90/300.0);
-            robot.left_ramp_servo.setPosition(90/300.0);
-        } else if (!ramp) {
-            robot.right_ramp_servo.setPosition(0/300.0);
-            robot.left_ramp_servo.setPosition(0/300.0);
-        }
 
         if (intakeOn) {
-            robot.intake_transfer.setPower(INTAKE_FORWARD);
+            intake.on();
         } else if (gamepad1.leftBumperWasPressed()) {
-            robot.intake_transfer.setPower(INTAKE_REVERSE);
+            intake.reverse();
         } else {
-            robot.intake_transfer.setPower(0);
+            intake.off();
         }
+        //endregion
 
 
-        if(gamepad2.left_bumper){
-            robot.left_gate.setPosition(90/300.0);
-            robot.intake_transfer.setPower(INTAKE_FORWARD);
-        }
-        if(gamepad2.right_bumper){
-            robot.right_gate.setPosition(90/300.0);
-            robot.intake_transfer.setPower(INTAKE_FORWARD);
+        //region Ramp
+        if(gamepad1.aWasPressed()){
+            ramp_on = !ramp_on;
         }
 
-        if(gamepad2.leftTriggerWasPressed()){
-            left_flower = !left_flower;
+        if(ramp_on){
+            ramp.down();
+        } else if (!ramp_on) {
+            ramp.up();
         }
-        if(gamepad2.rightTriggerWasPressed())
-        {
-            right_flower = !right_flower;
-        }
+        //endregion
 
-        if(left_flower){
-            robot.left_flower.setPosition(90/300.0);
-        } else if (!left_flower) {
-            robot.left_flower.setPosition(0/300.0);
-        }
 
-        if(right_flower){
-            robot.right_flower.setPosition(90/300.0);
-        } else if (!right_flower) {
-            robot.right_flower.setPosition(0/300.0);
-        }
 
 
         // Telemetry
