@@ -1,10 +1,11 @@
 package org.firstinspires.ftc.teamcode.OpMode;
 import static org.firstinspires.ftc.teamcode.Configs.Globals.Constants.*;
-import static org.firstinspires.ftc.teamcode.Configs.Globals.Poses.*;
 
+import com.pedropathing.api.PoseFactory;
 import com.pedropathing.drivetrain.DrivePowers;
 import com.pedropathing.follower.ManualDrive;
 import com.pedropathing.ivy.Scheduler;
+import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.pedropathing.controllers.PIDController;
@@ -20,7 +21,9 @@ import org.firstinspires.ftc.teamcode.Configs.CommandBase.Commands.Shoot;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.Commands.SetIntake;
 
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Transfer;
+import org.firstinspires.ftc.teamcode.Configs.Globals.PoseStorage;
 import org.firstinspires.ftc.teamcode.Configs.Globals.Robot;
+import org.firstinspires.ftc.teamcode.Configs.Globals.ShooterTable;
 
 import java.util.Objects;
 
@@ -34,14 +37,20 @@ public class Teleop extends OpMode {
     boolean  headingLock    = false;
     double[] goalPose = GOAL_POSE_BLUE;
 
-    private final PIDController headingController =
-            new PIDController(2.5, 0.0, 0.1);
-
     boolean intakeOn = false;
     boolean reverseOn = false;
     boolean ramp_on = false;
-    boolean left_flower = false;
-    boolean right_flower = false;
+    boolean isBlue;
+
+    private final PoseFactory mirroredFactory = PoseFactory.radians().mirrorX(70.75).mirrorY(70.75);
+
+
+    double holdX, holdY;
+    private final PIDController headingController = new PIDController(2.5, 0.0, 0.1);
+    private final PIDController holdXController = new PIDController(0.08, 0.0, 0.01);
+    private final PIDController holdYController = new PIDController(0.08, 0.0, 0.01);
+
+    boolean positionHold = false;
 
 
 
@@ -101,68 +110,102 @@ public class Teleop extends OpMode {
 
     @Override
     public void start() {
-        boolean isBlue = Objects.equals(options[selectedOption], "Blue");
+        isBlue = Objects.equals(options[selectedOption], "Blue");
+
         if (isBlue) {
             goalPose = GOAL_POSE_BLUE;
-            robot.follower.setPose(BLUE_START);
         } else {
             goalPose = GOAL_POSE_RED;
-            robot.follower.setPose(RED_START);
+        }
+
+        if (PoseStorage.lastAutoPose != null) {
+            robot.follower.setPose(PoseStorage.lastAutoPose);
         }
 
     }
+
+
 
     @Override
     public void loop() {
         robot.periodic();
         Scheduler.execute(); // runs anything scheduled — nothing's scheduled yet, but it's plugged in and ready
 
-        SpinFlywheel.on(flywheel);
+        robot.flywheel.setVelocity(ShooterTable.speedFor(distanceToGoal));
 
 
-        //region Heading Lock
-        if (gamepad1.rightTriggerWasPressed()){
-            otherSide = !otherSide;
+
+        //region Heading Lock/Driving
+        if (robot.follower.pose().y() > 75) {
+            goalPose[1] = 97.0;
+        } else {
+            goalPose[1] = 47.0;
         }
+        double dx = goalPose[0] - robot.follower.pose().x();
+        double dy = goalPose[1] - robot.follower.pose().y();
+        distanceToGoal = Math.hypot(dx, dy);
+
         // ── RightBumper — toggle heading lock ──────────────────────────────────────
         if (gamepad1.rightBumperWasPressed()) {
             headingLock = !headingLock;
         }
-
         double turnPower;
         if(headingLock) {
-            double dx;
-            double dy;
-
-            if (otherSide){
-                dx = goalPose[0] - robot.follower.pose().x();
-                dy = goalPose[1] - OTHERSIDE  - robot.follower.pose().y();
-            }else{
-                dx = goalPose[0] - robot.follower.pose().x();
-                dy = goalPose[1] - robot.follower.pose().y();
-            }
             double kV = -0.75; // start here, tune sign/magnitude by watching behavior while strafing
             double denom = dx * dx + dy * dy;
             double headingVelFF = denom > 1e-6
                     ? (dx * robot.follower.velocity().vy - dy * robot.follower.velocity().vx) / denom
                     : 0;
-            distanceToGoal = Math.hypot(dx, dy);
             headingError = normalizeAngle(Math.atan2(dy, dx) + Math.PI - robot.follower.pose().heading());
-            turnPower = headingController.calculate(0, headingError) + kV * headingVelFF;
+            headingError = normalizeAngle(Math.atan2(dy, dx) + Math.PI - robot.follower.pose().heading());
+            if (Math.abs(headingError) < Math.toRadians(1)) {
+                turnPower = 0;
+            } else {
+                turnPower = headingController.calculate(0, headingError) + kV * headingVelFF;
+            }
         }else {
             turnPower = gamepad1.right_stick_x;
+            //isBlue ? gamepad1.right_stick_x : gamepad1.right_stick_x;
         }
 
-        // Field-centric drive
+        double flip = isBlue ? 1 : -1;
+
+        double driveY = flip * gamepad1.left_stick_y;
+        double driveX = flip * gamepad1.left_stick_x;
+        boolean driverMoving = Math.abs(gamepad1.left_stick_x) > 0.05
+                || Math.abs(gamepad1.left_stick_y) > 0.05;
+
+        // Toggle position hold (X)
+        if (gamepad1.xWasPressed()) {
+            positionHold = !positionHold;
+            holdX = robot.follower.pose().x();
+            holdY = robot.follower.pose().y();
+        }
+
+        if (positionHold) {
+            if (driverMoving) {
+                // driving: keep moving the target with the robot
+                holdX = robot.follower.pose().x();
+                holdY = robot.follower.pose().y();
+            } else {
+                // idle: push back toward the saved spot
+                double errX = holdX - robot.follower.pose().x();
+                double errY = holdY - robot.follower.pose().y();
+
+                driveY += clamp(holdYController.calculate(0, errY), 0.5);
+                driveX += clamp(holdXController.calculate(0, errX), 0.5);
+            }
+        }
+
         DrivePowers powers = ManualDrive.fieldCentric(
-                -gamepad1.left_stick_y,
-                -gamepad1.left_stick_x,
+                driveY,
+                driveX,
                 turnPower,
                 robot.follower.pose().heading()
         );
-
         robot.follower.manual(powers);
         //endregion
+
 
 
         //region Shoot
@@ -188,7 +231,7 @@ public class Teleop extends OpMode {
 
         if (intakeOn) {
             intake.on();
-        } else if (gamepad1.leftBumperWasPressed()) {
+        } else if (gamepad1.leftTriggerWasPressed()) {
             intake.reverse();
         } else {
             intake.off();
@@ -220,5 +263,16 @@ public class Teleop extends OpMode {
 
     private static double normalizeAngle(double angle) {
         return Math.atan2(Math.sin(angle), Math.cos(angle));
+    }
+
+    private Pose m(Pose pose) {
+        if (isBlue) {
+            return mirroredFactory.of(pose.x(), pose.y(), pose.heading());
+        }
+        return pose;
+    }
+
+    private static double clamp(double v, double max) {
+        return Math.max(-max, Math.min(max, v));
     }
 }

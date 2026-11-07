@@ -1,33 +1,39 @@
 package org.firstinspires.ftc.teamcode.Configs.Autos;
 
-import static com.pedropathing.api.Paths.*;
+import static com.pedropathing.ivy.commands.Commands.instant;
+import static com.pedropathing.ivy.commands.Commands.waitMs;
 import static com.pedropathing.ivy.groups.Groups.deadline;
 import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
-import static org.firstinspires.ftc.teamcode.Configs.Globals.Poses.*;
 
+import com.pedropathing.api.Paths;
 import com.pedropathing.api.PoseFactory;
 import com.pedropathing.ivy.Command;
 import com.pedropathing.math.Pose;
 import com.pedropathing.paths.Path;
 
-import org.firstinspires.ftc.teamcode.Configs.CommandBase.Commands.SetIntake;
-import org.firstinspires.ftc.teamcode.Configs.CommandBase.Commands.SetRamp;
-import org.firstinspires.ftc.teamcode.Configs.CommandBase.Commands.SpinFlywheel;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.Commands.Shoot;
+import org.firstinspires.ftc.teamcode.Configs.CommandBase.Commands.SpinFlywheel;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Flywheel;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Gate;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Intake;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Ramp;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Transfer;
 import org.firstinspires.ftc.teamcode.Configs.Globals.Robot;
-
-import java.util.Set;
-
+import org.firstinspires.ftc.teamcode.OpMode.Auto;
 public class FarAuto implements AutoRoutine{
 
     private final PoseFactory mirroredFactory = PoseFactory.radians().mirrorX(70.75).mirrorY(70.75);
+    private final PoseFactory poseFactory = PoseFactory.degrees();
+
+    private final Pose start = poseFactory.of(63.4796, 133.1919, 90);
+    private final Pose path1 = poseFactory.of(47.1716, 125.0199, 90);
+    private final Pose point2 = poseFactory.of(47.0401, 130.017, 90);
+    private final Pose point3 = poseFactory.of(58.8784, 132.2829, 90);
+    private final Pose point3Control1 = poseFactory.of(56.3501, 120.1701, 0);
+    private final Pose point4Start = poseFactory.of(58.8784, 132.2829, 90);
+    private final Pose point4 = poseFactory.of(11.6707, 121.5026, 0);
     private final boolean blue;
     public FarAuto(boolean blue) {
         this.blue = blue;
@@ -40,10 +46,9 @@ public class FarAuto implements AutoRoutine{
     }
     @Override
     public Pose getStartPose() {
-        return m(FAR_START);
+        return m(start);
     }
 
-    @Override
     public Command build(Robot robot) {
         Flywheel flywheel = new Flywheel(robot.flywheel);
         Intake intake = new Intake(robot.intake);
@@ -51,39 +56,37 @@ public class FarAuto implements AutoRoutine{
         Ramp ramp = new Ramp(robot.left_ramp_servo, robot.right_ramp_servo);
         Gate gate = new Gate(robot.gate);
 
+        Command rampDown = instant(ramp::down);
+        Command rampUp = instant(ramp::up);
+        Command intakeOn = instant(intake::on);
+        Command intakeOff = instant(intake::off);
+        Command shoot = Shoot.auto(gate, intake, transfer);
         return deadline(
-            sequential(
-                    Shoot.auto(gate, intake, transfer),
+                sequential(
+                        shoot,
 
-                    parallel(
-                            SetRamp.down(ramp),
-                            SetIntake.forward(intake),
-                            follow(robot.follower, FLOWER())
+                        follow(robot.follower, path1())
 
-                    ),
-
-                    parallel(
-                            follow(robot.follower, SHOOT()),
-                            SetRamp.up(ramp)
-                    ),
-
-                    Shoot.auto(gate, intake, transfer),
-
-
-                    follow(robot.follower, PARK())
-            ),
+                ),
                 SpinFlywheel.on(flywheel)
         );
     }
 
-    private Path FLOWER(){
-        return curve(m(FAR_START), m(FAR_FLOWERCURVE), m(FAR_FLOWER)).linear(m(FAR_START), m(FAR_FLOWER));
-    }
 
-    private Path SHOOT(){
-        return curve(m(FAR_FLOWER), m(FAR_SHOOTCURVE), m(FAR_SHOOT)).linear(m(FAR_FLOWER), m(FAR_SHOOT));
-    }
-    private Path PARK(){
-        return curve(m(FAR_SHOOT), m(FAR_PARKCURVE), m(FAR_PARK)).linear(m(FAR_SHOOT), m(FAR_PARK));
-    }
+
+        public Path path1() {
+            return Paths.line(start, path1).constant(path1);
+        }
+
+        public Path path2() {
+            return Paths.line(path1, point2).constant(point2);
+        }
+
+        public Path path3() {
+            return Paths.curve(point2, point3Control1, point3).constant(point3);
+        }
+
+        public Path path4() {
+            return Paths.line(point4Start, point4).linear(point4Start, point4);
+        }
 }

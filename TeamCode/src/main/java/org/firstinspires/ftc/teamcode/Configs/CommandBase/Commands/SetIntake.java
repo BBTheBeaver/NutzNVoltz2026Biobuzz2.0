@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.Configs.Globals.Constants.*;
 
 public class SetIntake {
 
-    public static Command forward(Intake intake) {
+    public static Command on(Intake intake) {
         return sequential(
                 instant(intake::on)
         );
@@ -24,7 +24,7 @@ public class SetIntake {
         );
     }
 
-    public static Command stop(Intake intake) {
+    public static Command off(Intake intake) {
         return sequential(
                 instant(intake::off)
         );
