@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.Configs.Globals;
 
 
+import static com.qualcomm.hardware.lynx.LynxModule.DebugGroup.I2C;
+
 import com.pedropathing.follower.Follower;
 import com.pedropathing.utils.Timer;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
@@ -10,8 +12,11 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.SwitchableLight;
+
 import static org.firstinspires.ftc.teamcode.Configs.Globals.Constants.*;
 
 import org.firstinspires.ftc.teamcode.pedro.PedroConstants;
@@ -32,8 +37,10 @@ public class Robot {
     public final Servo left_ramp_servo;
     public final Servo right_ramp_servo;
     public final Servo gate;
-
     public final Limelight3A limelight;
+    public final NormalizedColorSensor colorSensor;
+    public final Servo light;
+
 
 
 
@@ -64,12 +71,14 @@ public class Robot {
 
         flywheel = hw.get(DcMotorEx.class, "flywheel");
 
-        left_ramp_servo = hw.get(Servo.class, "left_ramp_servo");
-        right_ramp_servo = hw.get(Servo.class, "right_ramp_servo");
+        left_ramp_servo = hw.get(Servo.class, "leftRampServo");
+        right_ramp_servo = hw.get(Servo.class, "rightRampServo");
 
         gate = hw.get(Servo.class, "gate");
 
         limelight = hw.get(Limelight3A.class, "limelight");
+        colorSensor = hw.get(NormalizedColorSensor.class, "colorSensor");
+        light = hw.get(Servo.class, "light");
 
 
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -84,6 +93,11 @@ public class Robot {
 
         limelight.setPollRateHz(100);
         limelight.start();
+
+        colorSensor.setGain(2);
+        if (colorSensor instanceof SwitchableLight) {
+            ((SwitchableLight) colorSensor).enableLight(true);
+        }
         // -----------------------------------------
 
         loop.reset();

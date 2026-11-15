@@ -9,10 +9,14 @@ import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.pedropathing.controllers.PIDController;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.ColorSensor;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Flywheel;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Gate;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Intake;
+import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Light;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Ramp;
 
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.Commands.SetRamp;
@@ -41,6 +45,7 @@ public class Teleop extends OpMode {
     boolean reverseOn = false;
     boolean ramp_on = false;
     boolean isBlue;
+    boolean lastFull = false;   // field, outside loop()
 
     private final PoseFactory mirroredFactory = PoseFactory.radians().mirrorX(70.75).mirrorY(70.75);
 
@@ -59,12 +64,17 @@ public class Teleop extends OpMode {
     boolean upLast = false;
     boolean downLast = false;
 
+    ElapsedTime timer = new ElapsedTime();
+    double secs;
+    double waitTime = 1;//Second
     Robot robot;
     Flywheel flywheel;
     Intake intake;
     Transfer transfer;
     Ramp ramp;
     Gate gate;
+    ColorSensor colorSensor;
+    Light light;
 
 
 
@@ -81,6 +91,8 @@ public class Teleop extends OpMode {
         transfer = new Transfer(robot.transfer);
         ramp = new Ramp(robot.left_ramp_servo, robot.right_ramp_servo);
         gate = new Gate(robot.gate);
+        colorSensor = new ColorSensor(robot.colorSensor);
+        light = new Light(robot.light);
 
 
         //Driver 1: Intake, Heading lock, Drive, Ramp
@@ -236,6 +248,15 @@ public class Teleop extends OpMode {
         } else {
             intake.off();
         }
+        if(colorSensor.full() && !lastFull){
+            intake.off();
+            light.red();
+        }
+        else{
+            light.green();
+        }
+        lastFull = colorSensor.full();
+
         //endregion
 
 
