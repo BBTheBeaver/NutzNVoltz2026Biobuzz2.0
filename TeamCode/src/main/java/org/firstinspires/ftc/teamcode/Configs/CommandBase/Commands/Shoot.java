@@ -27,7 +27,7 @@ public class Shoot {
 
                 }),
 
-                waitMs(1000),
+                waitMs(750),
 
                 instant(() -> {
                     gate.close();

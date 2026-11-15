@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Configs.Globals;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.utils.Timer;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -12,8 +13,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import static org.firstinspires.ftc.teamcode.Configs.Globals.Constants.*;
-
-
 
 import org.firstinspires.ftc.teamcode.pedro.PedroConstants;
 
@@ -33,6 +32,8 @@ public class Robot {
     public final Servo left_ramp_servo;
     public final Servo right_ramp_servo;
     public final Servo gate;
+
+    public final Limelight3A limelight;
 
 
 
@@ -68,6 +69,8 @@ public class Robot {
 
         gate = hw.get(Servo.class, "gate");
 
+        limelight = hw.get(Limelight3A.class, "limelight");
+
 
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         transfer.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -78,6 +81,9 @@ public class Robot {
 
         left_ramp_servo.setPosition(RAMP_UP);
         right_ramp_servo.setPosition(RAMP_UP);
+
+        limelight.setPollRateHz(100);
+        limelight.start();
         // -----------------------------------------
 
         loop.reset();

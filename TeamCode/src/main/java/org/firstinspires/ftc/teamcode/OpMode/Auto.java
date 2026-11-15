@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.Configs.Autos.AutoRoutine;
 import org.firstinspires.ftc.teamcode.Configs.Autos.FarAuto;
+import org.firstinspires.ftc.teamcode.Configs.Autos.ParkAuto;
 import org.firstinspires.ftc.teamcode.Configs.Autos.SoloAuto;
 import org.firstinspires.ftc.teamcode.Configs.Globals.AutoConfig;
 import org.firstinspires.ftc.teamcode.Configs.Globals.PoseStorage;
@@ -26,12 +27,14 @@ public class Auto extends OpMode {
     private final AutoRoutine[] red_autos = {
             new FarAuto(false),
             new SoloAuto(false),
+            new ParkAuto(false)
             // Add more autos here
     };
 
     private final AutoRoutine[] blue_auto = {
             new FarAuto(true),
             new SoloAuto(true),
+            new ParkAuto(true)
             // Add more autos here
     };
 
