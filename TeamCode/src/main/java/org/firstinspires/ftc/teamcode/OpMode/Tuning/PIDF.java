@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.OpMode.Tunning;
+package org.firstinspires.ftc.teamcode.OpMode.Tuning;
 
 import static org.firstinspires.ftc.teamcode.Configs.Globals.Constants.GATE_CLOSE;
 import static org.firstinspires.ftc.teamcode.Configs.Globals.Constants.GATE_OPEN;

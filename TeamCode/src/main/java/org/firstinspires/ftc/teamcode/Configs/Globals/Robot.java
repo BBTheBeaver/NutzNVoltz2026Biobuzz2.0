@@ -39,7 +39,8 @@ public class Robot {
     public final Servo gate;
     public final Limelight3A limelight;
     public final NormalizedColorSensor colorSensor;
-    public final Servo light;
+    public final Servo intakeLight;
+    public final Servo shooterLight;
 
 
 
@@ -78,7 +79,8 @@ public class Robot {
 
         limelight = hw.get(Limelight3A.class, "limelight");
         colorSensor = hw.get(NormalizedColorSensor.class, "colorSensor");
-        light = hw.get(Servo.class, "light");
+        intakeLight = hw.get(Servo.class, "intakeLight");
+        shooterLight = hw.get(Servo.class, "shooterLight");
 
 
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

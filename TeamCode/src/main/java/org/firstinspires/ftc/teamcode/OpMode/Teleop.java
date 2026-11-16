@@ -9,25 +9,21 @@ import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.pedropathing.controllers.PIDController;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.ColorSensor;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Flywheel;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Gate;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Intake;
-import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Light;
+import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.IntakeLight;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Ramp;
 
-import org.firstinspires.ftc.teamcode.Configs.CommandBase.Commands.SetRamp;
-import org.firstinspires.ftc.teamcode.Configs.CommandBase.Commands.SpinFlywheel;
-import org.firstinspires.ftc.teamcode.Configs.CommandBase.Commands.Shoot;
-import org.firstinspires.ftc.teamcode.Configs.CommandBase.Commands.SetIntake;
-
+import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.ShooterLight;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Transfer;
 import org.firstinspires.ftc.teamcode.Configs.Globals.PoseStorage;
 import org.firstinspires.ftc.teamcode.Configs.Globals.Robot;
 import org.firstinspires.ftc.teamcode.Configs.Globals.ShooterTable;
+import org.firstinspires.ftc.teamcode.Configs.Globals.Zone;
 
 import java.util.Objects;
 
@@ -41,11 +37,21 @@ public class Teleop extends OpMode {
     boolean  headingLock    = false;
     double[] goalPose = GOAL_POSE_BLUE;
 
+    boolean upLast = false;
+    boolean downLast = false;
+
     boolean intakeOn = false;
     boolean reverseOn = false;
+
     boolean ramp_on = false;
+
     boolean isBlue;
+
     boolean lastFull = false;   // field, outside loop()
+
+    boolean zone1;
+    boolean zone2;
+
 
     private final PoseFactory mirroredFactory = PoseFactory.radians().mirrorX(70.75).mirrorY(70.75);
 
@@ -61,8 +67,7 @@ public class Teleop extends OpMode {
 
     final String[] options = {"Blue", "Red"};
     int selectedOption = 0;
-    boolean upLast = false;
-    boolean downLast = false;
+
 
     ElapsedTime timer = new ElapsedTime();
     double secs;
@@ -74,7 +79,8 @@ public class Teleop extends OpMode {
     Ramp ramp;
     Gate gate;
     ColorSensor colorSensor;
-    Light light;
+    IntakeLight intakeLight;
+    ShooterLight shooterLight;
 
 
 
@@ -92,7 +98,8 @@ public class Teleop extends OpMode {
         ramp = new Ramp(robot.left_ramp_servo, robot.right_ramp_servo);
         gate = new Gate(robot.gate);
         colorSensor = new ColorSensor(robot.colorSensor);
-        light = new Light(robot.light);
+        intakeLight = new IntakeLight(robot.intakeLight);
+        shooterLight = new ShooterLight(robot.shooterLight);
 
 
         //Driver 1: Intake, Heading lock, Drive, Ramp
@@ -145,6 +152,12 @@ public class Teleop extends OpMode {
 
         robot.flywheel.setVelocity(ShooterTable.speedFor(distanceToGoal));
 
+
+        //region variable sets
+        zone1 = Zone.contains(redLaunchZone1, robot.follower.pose().x(), robot.follower.pose().y());
+        zone2 = Zone.contains(redLaunchZone2, robot.follower.pose().x(), robot.follower.pose().y());
+
+        //endregion
 
 
         //region Heading Lock/Driving
@@ -221,6 +234,13 @@ public class Teleop extends OpMode {
 
 
         //region Shoot
+        if(zone1 || zone2){
+            shooterLight.blue();
+        }else{
+            shooterLight.off();
+        }
+
+
         if(gamepad1.y)
         {
             gate.open();
@@ -250,10 +270,10 @@ public class Teleop extends OpMode {
         }
         if(colorSensor.full() && !lastFull){
             intake.off();
-            light.red();
+            intakeLight.red();
         }
         else{
-            light.green();
+            intakeLight.green();
         }
         lastFull = colorSensor.full();
 
@@ -261,7 +281,7 @@ public class Teleop extends OpMode {
 
 
         //region Ramp
-        if(gamepad1.aWasPressed()){
+        if(gamepad1.rightStickButtonWasPressed()){
             ramp_on = !ramp_on;
         }
 

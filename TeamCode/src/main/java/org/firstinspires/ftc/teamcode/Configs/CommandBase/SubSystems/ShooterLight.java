@@ -1,12 +1,11 @@
 package org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems;
 
-import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
-public class Light {
+public class ShooterLight {
 
     private final Servo light;
-    public Light(Servo light){
+    public ShooterLight(Servo light){
         this.light = light;
     }
 

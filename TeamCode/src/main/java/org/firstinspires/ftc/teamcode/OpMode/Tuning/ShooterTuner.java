@@ -1,20 +1,15 @@
-package org.firstinspires.ftc.teamcode.OpMode.Tunning;
+package org.firstinspires.ftc.teamcode.OpMode.Tuning;
 import static org.firstinspires.ftc.teamcode.Configs.Globals.Constants.*;
 
 
-import com.pedropathing.drivetrain.DrivePowers;
-import com.pedropathing.follower.ManualDrive;
 import com.pedropathing.ivy.Scheduler;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.pedropathing.controllers.PIDController;
 
 import org.firstinspires.ftc.teamcode.Configs.Globals.Robot;
 
-import java.util.Objects;
 
-
-@TeleOp(name = "Shooter Tuner", group = "StarterBot")
+@TeleOp(name = "Shooter Tuner", group = "Tuning")
 public class ShooterTuner extends OpMode {
     int Shooter_speed = 1230;
     Robot robot;
@@ -38,10 +33,12 @@ public class ShooterTuner extends OpMode {
 
         if(gamepad1.y){
             robot.transfer.setPower(1);
+            robot.intake.setPower(1);
             robot.gate.setPosition(GATE_OPEN);
         }
         else{
             robot.transfer.setPower(0);
+            robot.intake.setPower(0);
             robot.gate.setPosition(GATE_CLOSE);
         }
 
