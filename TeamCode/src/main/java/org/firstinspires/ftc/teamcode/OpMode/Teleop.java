@@ -71,7 +71,7 @@ public class Teleop extends OpMode {
 
     ElapsedTime timer = new ElapsedTime();
     double secs;
-    double waitTime = 1;//Second
+    double waitTime = 1.5;//Second
     Robot robot;
     Flywheel flywheel;
     Intake intake;
@@ -269,8 +269,11 @@ public class Teleop extends OpMode {
             intake.off();
         }
         if(colorSensor.full() && !lastFull){
-            intake.off();
-            intakeLight.red();
+            timer.reset();
+            if(timer.seconds() > secs) {
+                intake.off();
+                intakeLight.red();
+            }
         }
         else{
             intakeLight.green();
