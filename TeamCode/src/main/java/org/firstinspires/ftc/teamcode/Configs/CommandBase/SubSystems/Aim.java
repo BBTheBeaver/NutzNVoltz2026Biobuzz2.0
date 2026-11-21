@@ -1,6 +1,8 @@
 
 package org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems;
 
+import static org.firstinspires.ftc.teamcode.Configs.Globals.ShooterConstants.ballFlightTime;
+
 import com.pedropathing.controllers.PIDController;
 
 import org.firstinspires.ftc.teamcode.Configs.Globals.Robot;
@@ -23,9 +25,12 @@ public class Aim {
     public double update(Robot robot, boolean headingLock, double[] goalPose, double stickTurn) {
         double x = robot.follower.pose().x();
         double y = robot.follower.pose().y();
-        double tof = 0.5;
 
         double goalY = y > 75 ? 97.0 : 47.0;
+
+        double realDistance = Math.hypot(goalPose[0] - x, goalY - y);
+        double tof = Math.max(0, ballFlightTime(realDistance));   // never negative
+
         double vgx = goalPose[0] - robot.follower.velocity().vx * tof;
         double vgy = goalY - robot.follower.velocity().vy * tof;
 

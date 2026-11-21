@@ -19,7 +19,7 @@ public class ShooterConstants {
     }
 
     public static double ballFlightTime(double x){
-        return x;
+        return (((8.06981e-7 * x + 0.000156793) * x - 0.01136) * x + 0.38197) * x - 4.37576;
     }
 
     public static double angleOffset(double x){
