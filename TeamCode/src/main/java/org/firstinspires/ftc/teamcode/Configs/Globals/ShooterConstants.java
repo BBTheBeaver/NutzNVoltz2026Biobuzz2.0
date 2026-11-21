@@ -18,11 +18,11 @@ public class ShooterConstants {
         return Math.max(min, Math.min(max, value));
     }
 
-    public double ballFlightTime(double x){
-
+    public static double ballFlightTime(double x){
+        return x;
     }
 
-    public double angleOffset(double x){
-        
+    public static double angleOffset(double x){
+        return x;
     }
 }
