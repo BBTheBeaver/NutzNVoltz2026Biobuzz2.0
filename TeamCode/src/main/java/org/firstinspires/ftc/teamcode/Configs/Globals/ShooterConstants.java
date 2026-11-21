@@ -35,4 +35,12 @@ public class ShooterConstants {
     public double flywheelSpeed(double x) {
         return (((-0.00021331 * x + 0.0395582) * x - 2.57344) * x + 76.78332) * x + 347.25784;
     }
+
+    public double ballFlightTime(double x){
+
+    }
+
+    public double angleOffset(double x){
+        
+    }
 }
