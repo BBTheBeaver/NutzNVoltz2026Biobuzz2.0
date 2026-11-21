@@ -137,7 +137,7 @@ public class Teleop extends OpMode {
         robot.periodic();
         Scheduler.execute(); // runs anything scheduled — nothing's scheduled yet, but it's plugged in and ready
 
-        robot.flywheel.setVelocity(ShooterConstants.speedFor(aim.getDistanceToGoal()));
+        robot.flywheel.setVelocity(ShooterConstants.flywheelSpeed(aim.getDistanceToGoal()));
 
 
         //region Drive
