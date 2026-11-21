@@ -1,3 +1,4 @@
+
 package org.firstinspires.ftc.teamcode.Configs.CommandBase.Commands;
 
 import static com.pedropathing.ivy.commands.Commands.instant;
@@ -11,6 +12,8 @@ import org.firstinspires.ftc.teamcode.Configs.Globals.Robot;
 import org.firstinspires.ftc.teamcode.Configs.Globals.Constants.*;
 
 public class SetIntake {
+
+    // ═════════════════════════ INTAKE COMMANDS ═════════════════════════
 
     public static Command on(Intake intake) {
         return sequential(

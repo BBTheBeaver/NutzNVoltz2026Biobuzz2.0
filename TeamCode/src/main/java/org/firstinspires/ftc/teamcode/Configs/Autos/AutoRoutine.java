@@ -1,3 +1,4 @@
+
 package org.firstinspires.ftc.teamcode.Configs.Autos;
 
 import com.pedropathing.ivy.Command;
@@ -7,6 +8,9 @@ import org.firstinspires.ftc.teamcode.Configs.Globals.Robot;
 
 public interface AutoRoutine {
 
+    // ═════════════════════════ AUTO METHODS ═════════════════════════
+
     Pose getStartPose();
+
     Command build(Robot robot);
 }

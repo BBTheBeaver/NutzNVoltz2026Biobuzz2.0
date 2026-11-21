@@ -1,3 +1,4 @@
+
 package org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems;
 
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
@@ -5,20 +6,32 @@ import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class DistanceSensor {
+
+    // ═════════════════════════ CONSTANTS ═════════════════════════
+
     private static final double FULL_DISTANCE_CM = 5.0; // tune this
+
+
+    // ═════════════════════════ SUBSYSTEM VARIABLES ═════════════════════════
 
     private final NormalizedColorSensor sensor;
 
-    public DistanceSensor(NormalizedColorSensor sensor){
+
+    // ═════════════════════════ CONSTRUCTOR ═════════════════════════
+
+    public DistanceSensor(NormalizedColorSensor sensor) {
         this.sensor = sensor;
         sensor.setGain(2);
     }
 
-    public boolean full(){
+
+    // ═════════════════════════ SENSOR METHODS ═════════════════════════
+
+    public boolean full() {
         return getDistance() <= FULL_DISTANCE_CM;
     }
 
-    public double getDistance(){
+    public double getDistance() {
         return ((com.qualcomm.robotcore.hardware.DistanceSensor) sensor).getDistance(DistanceUnit.CM);
     }
 }

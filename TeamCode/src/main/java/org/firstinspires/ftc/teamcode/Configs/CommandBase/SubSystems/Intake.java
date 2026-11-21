@@ -1,24 +1,34 @@
+
 package org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import org.firstinspires.ftc.teamcode.Configs.Globals.Constants.*;
-import static org.firstinspires.ftc.teamcode.Configs.Globals.Constants.*;
+
+import static org.firstinspires.ftc.teamcode.Configs.Globals.Constants.INTAKE_FORWARD;
+import static org.firstinspires.ftc.teamcode.Configs.Globals.Constants.INTAKE_REVERSE;
 
 public class Intake {
 
+    // ═════════════════════════ SUBSYSTEM VARIABLES ═════════════════════════
+
     private final DcMotor motor;
+
+
+    // ═════════════════════════ CONSTRUCTOR ═════════════════════════
 
     public Intake(DcMotor motor) {
         this.motor = motor;
     }
+
+
+    // ═════════════════════════ INTAKE CONTROL METHODS ═════════════════════════
 
     // Turns on the intake
     public void on() {
         motor.setPower(INTAKE_FORWARD);
     }
 
-    public void reverse(){
+    // Reverses the intake
+    public void reverse() {
         motor.setPower(INTAKE_REVERSE);
     }
 

@@ -8,21 +8,20 @@ import com.pedropathing.ivy.Scheduler;
 import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.pedropathing.controllers.PIDController;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Aim;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.ColorSensor;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Flywheel;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Gate;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Intake;
-import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.IntakeLight;
+import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Light;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Ramp;
 
-import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.ShooterLight;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Transfer;
 import org.firstinspires.ftc.teamcode.Configs.Globals.PoseStorage;
 import org.firstinspires.ftc.teamcode.Configs.Globals.Robot;
-import org.firstinspires.ftc.teamcode.Configs.Globals.ShooterTable;
+import org.firstinspires.ftc.teamcode.Configs.Globals.ShooterConstants;
 import org.firstinspires.ftc.teamcode.Configs.Globals.Zone;
 
 import java.util.Objects;
@@ -31,47 +30,7 @@ import java.util.Objects;
 //@Disabled
 public class Teleop extends OpMode {
 
-    boolean otherSide = false;
-    double headingError   = 0;
-    double distanceToGoal = 0;
-    boolean  headingLock    = false;
-    double[] goalPose = GOAL_POSE_BLUE;
-
-    boolean upLast = false;
-    boolean downLast = false;
-
-    boolean intakeOn = false;
-    boolean reverseOn = false;
-
-    boolean ramp_on = false;
-
-    boolean isBlue;
-
-    boolean lastFull = false;   // field, outside loop()
-
-    boolean zone1;
-    boolean zone2;
-
-
-    private final PoseFactory mirroredFactory = PoseFactory.radians().mirrorX(70.75).mirrorY(70.75);
-
-
-    double holdX, holdY;
-    private final PIDController headingController = new PIDController(2.5, 0.0, 0.1);
-    private final PIDController holdXController = new PIDController(0.08, 0.0, 0.01);
-    private final PIDController holdYController = new PIDController(0.08, 0.0, 0.01);
-
-    boolean positionHold = false;
-
-
-
-    final String[] options = {"Blue", "Red"};
-    int selectedOption = 0;
-
-
-    ElapsedTime timer = new ElapsedTime();
-    double secs;
-    double waitTime = 1.5;//Second
+    // ───────────────────────── Robot & subsystems ─────────────────────────
     Robot robot;
     Flywheel flywheel;
     Intake intake;
@@ -79,13 +38,47 @@ public class Teleop extends OpMode {
     Ramp ramp;
     Gate gate;
     ColorSensor colorSensor;
-    IntakeLight intakeLight;
-    ShooterLight shooterLight;
+    Light intakeLight;
+    Light shooterLight;
+    Aim aim;
+
+    // ───────────────────────── Alliance select ─────────────────────────
+    final String[] options = {"Blue", "Red"};
+    int selectedOption = 0;
+    boolean upLast = false;
+    boolean downLast = false;
+    boolean isBlue;
+
+    // ───────────────────────── Drive / aiming ─────────────────────────
+    boolean  headingLock    = false;
+    double[] goalPose = GOAL_POSE_BLUE;
+    double turnPower;
+    double flip;
+
+
+    // ───────────────────────── Intake / ramp state ─────────────────────────
+    boolean intakeOn = false;
+    boolean reverseOn = false;
+    boolean ramp_on = false;
+    boolean lastFull = false;   // field, outside loop()
+
+    // ───────────────────────── Zones ─────────────────────────
+    boolean zone1;
+    boolean zone2;
+
+    // ───────────────────────── Timer ─────────────────────────
+    ElapsedTime timer = new ElapsedTime();
+    double secs;
+    double waitTime = 1.5;//Second
+
+    // ───────────────────────── Pose mirroring ─────────────────────────
+    private final PoseFactory mirroredFactory = PoseFactory.radians().mirrorX(70.75).mirrorY(70.75);
 
 
 
 
 
+    // ═════════════════════════ INIT ═════════════════════════
     @Override
     public void init() {
         robot = new Robot(hardwareMap);
@@ -98,20 +91,14 @@ public class Teleop extends OpMode {
         ramp = new Ramp(robot.left_ramp_servo, robot.right_ramp_servo);
         gate = new Gate(robot.gate);
         colorSensor = new ColorSensor(robot.colorSensor);
-        intakeLight = new IntakeLight(robot.intakeLight);
-        shooterLight = new ShooterLight(robot.shooterLight);
+        intakeLight = new Light(robot.intakeLight);
+        shooterLight = new Light(robot.shooterLight);
+        aim = new Aim();
 
 
-        //Driver 1: Intake, Heading lock, Drive, Ramp
-        //Driver 2: Shoot
-        //Intake/transfer on one motor
-        //Each shooter has a different motor
-        //drivetrain Parelle plate
-        //different servo on each side to unblock shooter
-        //Deflector on 2 servos
-        //Flower take using 2 servos
     }
 
+    // ═════════════════════════ INIT LOOP ═════════════════════════
     @Override
     public void init_loop() {
         if (gamepad1.dpad_down && !downLast) selectedOption = (selectedOption + 1) % options.length;
@@ -127,6 +114,7 @@ public class Teleop extends OpMode {
         telemetry.update();
     }
 
+    // ═════════════════════════ START ═════════════════════════
     @Override
     public void start() {
         isBlue = Objects.equals(options[selectedOption], "Blue");
@@ -143,88 +131,26 @@ public class Teleop extends OpMode {
 
     }
 
-
-
+    // ═════════════════════════ LOOP ═════════════════════════
     @Override
     public void loop() {
         robot.periodic();
         Scheduler.execute(); // runs anything scheduled — nothing's scheduled yet, but it's plugged in and ready
 
-        robot.flywheel.setVelocity(ShooterTable.speedFor(distanceToGoal));
+        robot.flywheel.setVelocity(ShooterConstants.speedFor(aim.getDistanceToGoal()));
 
 
-        //region variable sets
-        zone1 = Zone.contains(redLaunchZone1, robot.follower.pose().x(), robot.follower.pose().y());
-        zone2 = Zone.contains(redLaunchZone2, robot.follower.pose().x(), robot.follower.pose().y());
-
-        //endregion
-
-
-        //region Heading Lock/Driving
-        if (robot.follower.pose().y() > 75) {
-            goalPose[1] = 97.0;
-        } else {
-            goalPose[1] = 47.0;
-        }
-        double dx = goalPose[0] - robot.follower.pose().x();
-        double dy = goalPose[1] - robot.follower.pose().y();
-        distanceToGoal = Math.hypot(dx, dy);
-
-        // ── RightBumper — toggle heading lock ──────────────────────────────────────
+        //region Drive
         if (gamepad1.rightBumperWasPressed()) {
             headingLock = !headingLock;
         }
-        double turnPower;
-        if(headingLock) {
-            double kV = -0.75; // start here, tune sign/magnitude by watching behavior while strafing
-            double denom = dx * dx + dy * dy;
-            double headingVelFF = denom > 1e-6
-                    ? (dx * robot.follower.velocity().vy - dy * robot.follower.velocity().vx) / denom
-                    : 0;
-            headingError = normalizeAngle(Math.atan2(dy, dx) + Math.PI - robot.follower.pose().heading());
-            headingError = normalizeAngle(Math.atan2(dy, dx) + Math.PI - robot.follower.pose().heading());
-            if (Math.abs(headingError) < Math.toRadians(1)) {
-                turnPower = 0;
-            } else {
-                turnPower = headingController.calculate(0, headingError) + kV * headingVelFF;
-            }
-        }else {
-            turnPower = gamepad1.right_stick_x;
-            //isBlue ? gamepad1.right_stick_x : gamepad1.right_stick_x;
-        }
 
-        double flip = isBlue ? 1 : -1;
+        turnPower = aim.update(robot, headingLock, goalPose, gamepad1.right_stick_x);
 
-        double driveY = flip * gamepad1.left_stick_y;
-        double driveX = flip * gamepad1.left_stick_x;
-        boolean driverMoving = Math.abs(gamepad1.left_stick_x) > 0.05
-                || Math.abs(gamepad1.left_stick_y) > 0.05;
-
-        // Toggle position hold (X)
-        if (gamepad1.xWasPressed()) {
-            positionHold = !positionHold;
-            holdX = robot.follower.pose().x();
-            holdY = robot.follower.pose().y();
-        }
-
-        if (positionHold) {
-            if (driverMoving) {
-                // driving: keep moving the target with the robot
-                holdX = robot.follower.pose().x();
-                holdY = robot.follower.pose().y();
-            } else {
-                // idle: push back toward the saved spot
-                double errX = holdX - robot.follower.pose().x();
-                double errY = holdY - robot.follower.pose().y();
-
-                driveY += clamp(holdYController.calculate(0, errY), 0.5);
-                driveX += clamp(holdXController.calculate(0, errX), 0.5);
-            }
-        }
-
+        flip = isBlue ? 1 : -1;
         DrivePowers powers = ManualDrive.fieldCentric(
-                driveY,
-                driveX,
+                flip * gamepad1.left_stick_y,
+                flip * gamepad1.left_stick_x,
                 turnPower,
                 robot.follower.pose().heading()
         );
@@ -234,15 +160,16 @@ public class Teleop extends OpMode {
 
 
         //region Shoot
-        if(zone1 || zone2){
+        zone1 = Zone.contains(redLaunchZone1, robot.follower.pose().x(), robot.follower.pose().y());
+        zone2 = Zone.contains(redLaunchZone2, robot.follower.pose().x(), robot.follower.pose().y());
+        if (zone1 || zone2) {
             shooterLight.blue();
-        }else{
+        } else {
             shooterLight.off();
         }
 
 
-        if(gamepad1.y)
-        {
+        if (gamepad1.y) {
             gate.open();
             intake.on();
             transfer.on();
@@ -272,11 +199,11 @@ public class Teleop extends OpMode {
             timer.reset();
             if(timer.seconds() > secs) {
                 intake.off();
-                intakeLight.red();
+                intakeLight.green();
             }
         }
         else{
-            intakeLight.green();
+            intakeLight.red();
         }
         lastFull = colorSensor.full();
 
@@ -298,13 +225,15 @@ public class Teleop extends OpMode {
 
 
 
-        // Telemetry
+        //region Telemetry
         telemetry.addData("Triggers", "left (%.2f), right (%.2f)", gamepad1.left_trigger, gamepad1.right_trigger);
         telemetry.addData("Heading", "%.1f°", Math.toDegrees(robot.follower.pose().heading()));
         telemetry.addData("Loop Hz", robot.getLoopTimeHz());
         telemetry.update();
+        //endregion
     }
 
+    // ═════════════════════════ HELPERS ═════════════════════════
     private static double normalizeAngle(double angle) {
         return Math.atan2(Math.sin(angle), Math.cos(angle));
     }

@@ -15,15 +15,19 @@ import org.firstinspires.ftc.teamcode.Configs.Globals.Robot;
 @Autonomous(name = "Auto", group = "Autos")
 public class Auto extends OpMode {
 
+    // ───────────────────────── Robot ─────────────────────────
     private Robot robot;
 
+    // ───────────────────────── Selection stages ─────────────────────────
     // Selection stages: each one only starts after the previous is confirmed
     private enum Stage { ALLIANCE, AUTO, PARK, READY }
     private Stage stage = Stage.ALLIANCE;
 
+    // ───────────────────────── Alliance ─────────────────────────
     private final String[] options = {"Blue", "Red"};
     private int selectedOption_Alliance = 0; // 0 = Blue, 1 = Red
 
+    // ───────────────────────── Autos ─────────────────────────
     private final AutoRoutine[] red_autos = {
             new FarAuto(false),
             new SoloAuto(false),
@@ -41,14 +45,12 @@ public class Auto extends OpMode {
     private int selectedIndex = 0;
     private AutoRoutine selectedAuto;
 
+    // ───────────────────────── Park ─────────────────────────
     private final String[] parkOptions = {"Top", "Bottom"};
     private int selectedPark = 1;
     private boolean parkTop = false; // false = bottom
 
-    private AutoRoutine[] currentList() {
-        return selectedOption_Alliance == 0 ? blue_auto : red_autos;
-    }
-
+    // ═════════════════════════ INIT ═════════════════════════
     @Override
     public void init() {
         robot = new Robot(hardwareMap);
@@ -57,6 +59,7 @@ public class Auto extends OpMode {
         selectedAuto = currentList()[selectedIndex];
     }
 
+    // ═════════════════════════ INIT LOOP ═════════════════════════
     @Override
     public void init_loop() {
         boolean up = gamepad1.dpadUpWasPressed();
@@ -119,6 +122,7 @@ public class Auto extends OpMode {
         telemetry.update();
     }
 
+    // ═════════════════════════ START ═════════════════════════
     @Override
     public void start() {
         AutoConfig.parkTop = parkTop;       // must be set BEFORE build()
@@ -126,6 +130,7 @@ public class Auto extends OpMode {
         Scheduler.schedule(selectedAuto.build(robot));
     }
 
+    // ═════════════════════════ LOOP ═════════════════════════
     @Override
     public void loop() {
         robot.periodic();
@@ -134,10 +139,16 @@ public class Auto extends OpMode {
         PoseStorage.save(robot.follower.pose());
     }
 
+    // ═════════════════════════ STOP ═════════════════════════
     @Override
     public void stop() {
         if (robot != null) {
             PoseStorage.save(robot.follower.pose());
         }
+    }
+
+    // ═════════════════════════ HELPERS ═════════════════════════
+    private AutoRoutine[] currentList() {
+        return selectedOption_Alliance == 0 ? blue_auto : red_autos;
     }
 }

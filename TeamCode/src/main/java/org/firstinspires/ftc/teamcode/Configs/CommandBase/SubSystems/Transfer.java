@@ -1,25 +1,31 @@
+
 package org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems;
 
-import static org.firstinspires.ftc.teamcode.Configs.Globals.Constants.RAMP_DOWN;
-import static org.firstinspires.ftc.teamcode.Configs.Globals.Constants.RAMP_UP;
-
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
 
 public class Transfer {
+
+    // ═════════════════════════ SUBSYSTEM VARIABLES ═════════════════════════
+
     private final DcMotor motor;
 
+
+    // ═════════════════════════ CONSTRUCTOR ═════════════════════════
 
     public Transfer(DcMotor motor) {
         this.motor = motor;
     }
 
-    // Turns on the intake
+
+    // ═════════════════════════ CONTROL METHODS ═════════════════════════
+
+    // Turns off the transfer
     public void off() {
         motor.setPower(0);
     }
 
-    public void on (){
+    // Turns on the transfer
+    public void on() {
         motor.setPower(1);
     }
 }

@@ -1,3 +1,4 @@
+
 package org.firstinspires.ftc.teamcode.Configs.CommandBase.Commands;
 
 import static com.pedropathing.ivy.commands.Commands.instant;
@@ -7,7 +8,11 @@ import com.pedropathing.ivy.Command;
 
 import org.firstinspires.ftc.teamcode.Configs.Globals.Robot;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Flywheel;
+
 public class SpinFlywheel {
+
+    // ═════════════════════════ COMMAND METHODS ═════════════════════════
+
     public static Command on(Flywheel flywheel) {
         return sequential(
                 instant(flywheel::spinUp)

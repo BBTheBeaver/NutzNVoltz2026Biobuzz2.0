@@ -1,22 +1,32 @@
+
 package org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems;
 
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class Turret {
 
+    // ═════════════════════════ SUBSYSTEM VARIABLES ═════════════════════════
+
     private final Servo left;
     private final Servo right;
 
-    // Gear teeth
+
+    // ═════════════════════════ GEAR CONSTANTS ═════════════════════════
+
     private static final double TURRET_SERVO_GEAR_TEETH = 60;
     private static final double TURRET_SHAFT_INPUT_GEAR_TEETH = 20;
     private static final double TURRET_SHAFT_OUTPUT_GEAR_TEETH = 65;
     private static final double TURRET_RING_GEAR_TEETH = 169;
 
-    // Servo and turret calibration
+
+    // ═════════════════════════ CALIBRATION CONSTANTS ═════════════════════════
+
     private static final double SERVO_TRAVEL_DEG = 320;
     private static final double CENTER_DEG = 0;
     private static final double CENTER_POSITION = 0.5;
+
+
+    // ═════════════════════════ CALCULATED CONSTANTS ═════════════════════════
 
     // Calculate turret rotation from servo rotation
     private static final double DEG_PER_SERVO_DEG =
@@ -26,12 +36,18 @@ public class Turret {
     private static final double TURRET_TRAVEL_DEG = SERVO_TRAVEL_DEG * DEG_PER_SERVO_DEG;
     private static final double POSITION_PER_DEG = 1.0 / TURRET_TRAVEL_DEG;
 
+
+    // ═════════════════════════ CONSTRUCTOR ═════════════════════════
+
     public Turret(Servo left, Servo right) {
         this.left = left;
         this.right = right;
 
         right.setDirection(Servo.Direction.REVERSE);
     }
+
+
+    // ═════════════════════════ AIMING METHODS ═════════════════════════
 
     // Calculates the turret angle toward a field target
     public static double bearingToGoal(double x, double y, double headingRad, double goalX, double goalY) {
@@ -50,6 +66,9 @@ public class Turret {
         left.setPosition(clamp(position, 0, 1));
         right.setPosition(clamp(position, 0, 1));
     }
+
+
+    // ═════════════════════════ HELPER METHODS ═════════════════════════
 
     private static double normalizeDeg(double deg) {
         double w = (deg + 180) % 360;

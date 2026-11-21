@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.Configs.Globals;
 
-
 import static com.qualcomm.hardware.lynx.LynxModule.DebugGroup.I2C;
+import static org.firstinspires.ftc.teamcode.Configs.Globals.Constants.*;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.utils.Timer;
@@ -17,34 +17,41 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.SwitchableLight;
 
-import static org.firstinspires.ftc.teamcode.Configs.Globals.Constants.*;
-
 import org.firstinspires.ftc.teamcode.pedro.PedroConstants;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class Robot {
+
+    // ───────────────────────── Drive / Pedro ─────────────────────────
     public final Follower follower;
     public final List<LynxModule> hubs;
+
+    // ───────────────────────── Loop timing ─────────────────────────
     public final Timer loop = new Timer();
     public double loops = 0, lastloop = 0, loopTime = 0;
 
-    //hardware
+    // ───────────────────────── Hardware: Shooter ─────────────────────────
     public final DcMotorEx flywheel;
-    public final DcMotor intake;
-    public final DcMotor transfer;
-    public final Servo left_ramp_servo;
-    public final Servo right_ramp_servo;
     public final Servo gate;
-    public final Limelight3A limelight;
-    public final NormalizedColorSensor colorSensor;
-    public final Servo intakeLight;
     public final Servo shooterLight;
 
+    // ───────────────────────── Hardware: Intake / Transfer ─────────────────────────
+    public final DcMotor intake;
+    public final DcMotor transfer;
+    public final NormalizedColorSensor colorSensor;
+    public final Servo intakeLight;
+
+    // ───────────────────────── Hardware: Ramp ─────────────────────────
+    public final Servo left_ramp_servo;
+    public final Servo right_ramp_servo;
+
+    // ───────────────────────── Hardware: Vision ─────────────────────────
+    public final Limelight3A limelight;
 
 
-
+    // ═════════════════════════ CONSTRUCTOR ═════════════════════════
     public Robot(HardwareMap hw){
         follower = PedroConstants.createFollower(hw);
         hubs = hw.getAll(LynxModule.class);
@@ -87,6 +94,7 @@ public class Robot {
         transfer.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        flywheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(52.6, 0, 0, 11.7));
 
         gate.setPosition(GATE_CLOSE);
 
@@ -106,6 +114,7 @@ public class Robot {
         periodic();
     }
 
+    // ═════════════════════════ PERIODIC ═════════════════════════
     public void periodic(){
         loops++;
         if(loops > 10){
@@ -116,6 +125,8 @@ public class Robot {
         }
         follower.update();
     }
+
+    // ═════════════════════════ LOOP TIME GETTERS ═════════════════════════
     public double getLoopTimeMs() { return loopTime;}
     public double getLoopTimeHz() { return 1000/loopTime;}
 

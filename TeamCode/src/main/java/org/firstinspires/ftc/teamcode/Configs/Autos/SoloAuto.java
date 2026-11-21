@@ -1,3 +1,4 @@
+
 package org.firstinspires.ftc.teamcode.Configs.Autos;
 
 import static com.pedropathing.api.Paths.curve;
@@ -26,52 +27,74 @@ import org.firstinspires.ftc.teamcode.Configs.Globals.Robot;
 
 public class SoloAuto implements AutoRoutine {
 
+    // ═════════════════════════ POSE FACTORIES ═════════════════════════
+
     private final PoseFactory mirroredFactory = PoseFactory.radians().mirrorX(70.75).mirrorY(70.75);
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
+
+    // ═════════════════════════ PATH POSES ═════════════════════════
+
     private final Pose start = poseFactory.of(53.5477, 8.8583, 90);
+
     private final Pose path1 = poseFactory.of(6.812, 14.542, 270);
     private final Pose point2 = poseFactory.of(6.6893, 9.3658, 270);
+
     private final Pose point3Start = poseFactory.of(6.6893, 9.3658, 270);
     private final Pose point3 = poseFactory.of(61.5704, 132.2545, 90);
     private final Pose point3Control1 = poseFactory.of(22.9268, 91.2164, 0);
+
     private final Pose point4 = poseFactory.of(46.78, 117, 90);
     private final Pose point5 = poseFactory.of(46.783, 129.2663, 90);
+
     private final Pose point6 = poseFactory.of(61.57, 132.25, 90);
     private final Pose point6Control1 = poseFactory.of(54.2433, 112.0087, 0);
+
     private final Pose point7Start = poseFactory.of(61.57, 132.25, 90);
     private final Pose point7 = poseFactory.of(22.5336, 46.9187, 180);
     private final Pose point7Control1 = poseFactory.of(64.5148, 117.5485, 0);
     private final Pose point7Control2 = poseFactory.of(5.4902, 99.0999, 0);
+
     private final Pose point8 = poseFactory.of(12.4396, 46.92, 180);
+
     private final Pose point9Start = poseFactory.of(12.4396, 46.92, 180);
     private final Pose point9 = poseFactory.of(61.57, 132.25, 90);
     private final Pose point9Control1 = poseFactory.of(32.9974, 38.462, 0);
     private final Pose point9Control2 = poseFactory.of(31.1169, 84.6312, 0);
     private final Pose point9Control3 = poseFactory.of(15.9879, 110.8011, 0);
     private final Pose point9Control4 = poseFactory.of(28.8085, 100.3223, 0);
+
     private final Pose point10Start = poseFactory.of(61.57, 132.25, 90);
     private final Pose point10Top = poseFactory.of(10.929, 119.679, 0);
     private final Pose point10Bottom = poseFactory.of(10.929, 90, 0);
     private final Pose point10Control1 = poseFactory.of(56.7371, 101.4707, 0);
 
 
+    // ═════════════════════════ AUTO SETTINGS ═════════════════════════
+
     private final boolean blue;
+
     public SoloAuto(boolean blue) {
         this.blue = blue;
     }
+
+
+    // ═════════════════════════ POSE HELPERS ═════════════════════════
+
     private Pose m(Pose pose) {
         if (blue) {
             return mirroredFactory.of(pose.x(), pose.y(), pose.heading());
         }
         return pose;
     }
+
     @Override
     public Pose getStartPose() {
         return m(start);
     }
 
 
+    // ═════════════════════════ AUTO BUILD ═════════════════════════
 
     public Command build(Robot robot) {
         Flywheel flywheel = new Flywheel(robot.flywheel);
@@ -139,7 +162,7 @@ public class SoloAuto implements AutoRoutine {
     }
 
 
-
+    // ═════════════════════════ PATH 1–5 ═════════════════════════
 
     public Path path1() {
         return Paths.line(start, path1).constant(path1);
@@ -161,6 +184,9 @@ public class SoloAuto implements AutoRoutine {
         return Paths.line(point4, point5).constant(point5);
     }
 
+
+    // ═════════════════════════ PATH 6–10 ═════════════════════════
+
     public Path path6() {
         return Paths.curve(point5, point6Control1, point6).constant(point6);
     }
@@ -177,7 +203,7 @@ public class SoloAuto implements AutoRoutine {
         return Paths.curve(point9Start, point9Control1, point9Control2, point9Control3, point9Control4, point9).linear(point9Start, point9);
     }
 
-    public Path path10(){
+    public Path path10() {
         if (AutoConfig.parkTop) {
             return curve(m(point10Start), m(point10Control1), m(point10Top)).linear(m(point10Start), m(point10Top));
         }

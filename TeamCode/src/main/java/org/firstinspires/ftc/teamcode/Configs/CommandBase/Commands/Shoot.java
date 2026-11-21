@@ -1,3 +1,4 @@
+
 package org.firstinspires.ftc.teamcode.Configs.CommandBase.Commands;
 
 import static com.pedropathing.ivy.commands.Commands.instant;
@@ -17,6 +18,8 @@ import java.util.function.BooleanSupplier;
 
 public class Shoot {
 
+    // ═════════════════════════ AUTO ═════════════════════════
+
     // Auto — fixed duration, no outside input
     public static Command auto(Gate gate, Intake intake, Transfer transfer) {
         return sequential(
@@ -24,7 +27,6 @@ public class Shoot {
                     gate.open();
                     transfer.on();
                     intake.on();
-
                 }),
 
                 waitMs(750),
@@ -33,25 +35,6 @@ public class Shoot {
                     gate.close();
                     transfer.off();
                     intake.off();
-                })
-        );
-    }
-
-    // Teleop — runs for as long as "held" keeps returning true
-    public static Command whileHeld(Gate gate, Intake intake, Transfer transfer, BooleanSupplier held) {
-        return sequential(
-                instant(() -> {
-                    gate.open();
-                    intake.on();
-                    transfer.on();
-                }),
-
-                waitUntil(() -> !held.getAsBoolean()),
-
-                instant(() -> {
-                    gate.close();
-                    intake.off();
-                    transfer.off();
                 })
         );
     }
