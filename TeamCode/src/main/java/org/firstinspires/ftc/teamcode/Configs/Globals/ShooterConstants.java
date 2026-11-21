@@ -17,4 +17,12 @@ public class ShooterConstants {
     public static double clamp(double value, double min, double max) {
         return Math.max(min, Math.min(max, value));
     }
+
+    public double ballFlightTime(double x){
+
+    }
+
+    public double angleOffset(double x){
+        
+    }
 }
