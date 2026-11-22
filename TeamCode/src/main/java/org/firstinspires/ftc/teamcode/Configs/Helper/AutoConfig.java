@@ -1,5 +1,5 @@
 
-package org.firstinspires.ftc.teamcode.Configs.Globals;
+package org.firstinspires.ftc.teamcode.Configs.Helper;
 
 public class AutoConfig {
 

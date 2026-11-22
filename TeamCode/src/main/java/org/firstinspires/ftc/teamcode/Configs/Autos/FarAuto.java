@@ -22,9 +22,8 @@ import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Gate;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Intake;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Ramp;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Transfer;
-import org.firstinspires.ftc.teamcode.Configs.Globals.AutoConfig;
+import org.firstinspires.ftc.teamcode.Configs.Helper.AutoConfig;
 import org.firstinspires.ftc.teamcode.Configs.Globals.Robot;
-import org.firstinspires.ftc.teamcode.OpMode.Auto;
 
 public class FarAuto implements AutoRoutine {
 

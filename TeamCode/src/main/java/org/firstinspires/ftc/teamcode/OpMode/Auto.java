@@ -8,8 +8,8 @@ import org.firstinspires.ftc.teamcode.Configs.Autos.AutoRoutine;
 import org.firstinspires.ftc.teamcode.Configs.Autos.FarAuto;
 import org.firstinspires.ftc.teamcode.Configs.Autos.ParkAuto;
 import org.firstinspires.ftc.teamcode.Configs.Autos.SoloAuto;
-import org.firstinspires.ftc.teamcode.Configs.Globals.AutoConfig;
-import org.firstinspires.ftc.teamcode.Configs.Globals.PoseStorage;
+import org.firstinspires.ftc.teamcode.Configs.Helper.AutoConfig;
+import org.firstinspires.ftc.teamcode.Configs.Helper.PoseStorage;
 import org.firstinspires.ftc.teamcode.Configs.Globals.Robot;
 
 @Autonomous(name = "Auto", group = "Autos")

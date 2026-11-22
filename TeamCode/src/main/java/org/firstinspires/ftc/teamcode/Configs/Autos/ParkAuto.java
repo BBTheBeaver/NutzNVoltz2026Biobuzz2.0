@@ -14,9 +14,8 @@ import com.pedropathing.paths.Path;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Flywheel;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Intake;
 import org.firstinspires.ftc.teamcode.Configs.CommandBase.SubSystems.Ramp;
-import org.firstinspires.ftc.teamcode.Configs.Globals.AutoConfig;
+import org.firstinspires.ftc.teamcode.Configs.Helper.AutoConfig;
 import org.firstinspires.ftc.teamcode.Configs.Globals.Robot;
-import org.firstinspires.ftc.teamcode.OpMode.Auto;
 
 public class ParkAuto implements AutoRoutine {
 
