@@ -32,6 +32,8 @@ public class Turret {
 
     // Set to 180 if turret 0 deg points at the REAR of the robot. Test with the robot standing still.
     private static final double TURRET_ZERO_OFFSET_DEG = 0;
+    // Manually set the offset in the teleop
+    private double TURRET_ANGLE_OFFSET = 0;
 
     // Ball flight time in seconds (tune this, or replace with a distance-based fit)
     private static final double BALL_FLIGHT_TIME = 0.5;
@@ -69,7 +71,7 @@ public class Turret {
 
         distanceToGoal = Math.hypot(virtualGoalX - x, virtualGoalY - y);
 
-        turretAngleDeg = bearingToGoal(x, y, heading, virtualGoalX, virtualGoalY);
+        turretAngleDeg = normalizeDeg(bearingToGoal(x, y, heading, virtualGoalX, virtualGoalY) + TURRET_ANGLE_OFFSET);
         aimAt(turretAngleDeg);
     }
 
@@ -110,6 +112,10 @@ public class Turret {
 
     public double getTurretAngleDeg() {
         return turretAngleDeg;
+    }
+
+    public void setAngleOffset(double angleOffsetAmount){
+        TURRET_ANGLE_OFFSET = angleOffsetAmount;
     }
 
 

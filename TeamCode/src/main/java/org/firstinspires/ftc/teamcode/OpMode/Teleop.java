@@ -43,6 +43,7 @@ public class Teleop extends OpMode {
     private boolean headingLock = false;
     private boolean intakeOn = false;
     private boolean rampDown = false;
+    private double turretAngelOffset = 0;
 
 
     // ═════════════════════════ INIT ═════════════════════════
@@ -70,21 +71,24 @@ public class Teleop extends OpMode {
         binder.onPress(() -> gamepad1.left_bumper,
                 instant(() -> {
                     intakeOn = !intakeOn;
-                    if (intakeOn) intake.on(); else intake.off();
+                    if (intakeOn) intake.on();
+                    else intake.off();
                 }));
 
         // Reverse intake while the trigger is held, then restore the toggle state
         binder.whileHeld(() -> gamepad1.left_trigger > 0.5,
                 instant(intake::reverse),
                 instant(() -> {
-                    if (intakeOn) intake.on(); else intake.off();
+                    if (intakeOn) intake.on();
+                    else intake.off();
                 }));
 
         // Ramp toggle
         binder.onPress(() -> gamepad1.right_stick_button,
                 instant(() -> {
                     rampDown = !rampDown;
-                    if (rampDown) ramp.down(); else ramp.up();
+                    if (rampDown) ramp.down();
+                    else ramp.up();
                 }));
 
         // Shoot while Y is held
@@ -97,7 +101,20 @@ public class Teleop extends OpMode {
                 instant(() -> {
                     gate.close();
                     transfer.off();
-                    if (intakeOn) intake.on(); else intake.off();
+                    if (intakeOn) intake.on();
+                    else intake.off();
+                }));
+
+        // Decrease turret angle offset
+        binder.onPress(() -> gamepad2.left_bumper,
+                instant(() -> {
+                    turretAngelOffset -= 1;
+                }));
+
+        // Increase turret angle offset
+        binder.onPress(() -> gamepad2.right_bumper,
+                instant(() -> {
+                    turretAngelOffset += 1;
                 }));
     }
 
@@ -105,8 +122,10 @@ public class Teleop extends OpMode {
     // ═════════════════════════ INIT LOOP ═════════════════════════
     @Override
     public void init_loop() {
-        if (gamepad1.dpadDownWasPressed()) selectedOption = (selectedOption + 1) % options.length;
-        if (gamepad1.dpadUpWasPressed()) selectedOption = (selectedOption - 1 + options.length) % options.length;
+        if (gamepad1.dpadDownWasPressed())
+            selectedOption = (selectedOption + 1) % options.length;
+        if (gamepad1.dpadUpWasPressed())
+            selectedOption = (selectedOption - 1 + options.length) % options.length;
 
         telemetry.addLine("=== ALLIANCE SELECT ===");
 
@@ -142,9 +161,14 @@ public class Teleop extends OpMode {
         // Drive
         double flip = isBlue ? 1 : -1;
 
+        turret.setAngleOffset(turretAngelOffset);
+
         turret.update(robot, goalPose);
 
         robot.flywheel.setVelocity(
+                ShooterConstants.flywheelSpeed(turret.getDistanceToGoal())
+        );
+        robot.flywheel2.setVelocity(
                 ShooterConstants.flywheelSpeed(turret.getDistanceToGoal())
         );
 
@@ -156,6 +180,7 @@ public class Teleop extends OpMode {
         );
 
         robot.follower.manual(powers);
+
 
         telemetry.addData("Heading Lock", headingLock);
         telemetry.addData("Intake On", intakeOn);

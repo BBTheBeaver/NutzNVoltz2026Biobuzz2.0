@@ -37,6 +37,7 @@ public class Robot {
 
     // ───────────────────────── Hardware: Shooter ─────────────────────────
     public final DcMotorEx flywheel;
+    public final DcMotorEx flywheel2;
     public final Servo gate;
     public final Servo shooterLight;
 
@@ -89,6 +90,7 @@ public class Robot {
         transfer = hw.get(DcMotor.class, "transfer");
 
         flywheel = hw.get(DcMotorEx.class, "flywheel");
+        flywheel2 = hw.get(DcMotorEx.class, "flywheel2");
 
         left_ramp_servo = hw.get(Servo.class, "leftRampServo");
         right_ramp_servo = hw.get(Servo.class, "rightRampServo");
@@ -110,6 +112,8 @@ public class Robot {
         transfer.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         rightTurretServo.setDirection(Servo.Direction.REVERSE);
+
+        flywheel2.setDirection(DcMotorSimple.Direction.REVERSE);
 
         flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         flywheel.setPIDFCoefficients(
