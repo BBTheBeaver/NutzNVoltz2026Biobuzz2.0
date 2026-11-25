@@ -19,10 +19,10 @@ public class Turret {
 
 
     // ───────────────────────── Gear Constants ─────────────────────────
-    private static final double TURRET_SERVO_GEAR_TEETH = 60;
+    private static final double TURRET_SERVO_GEAR_TEETH = 40;
     private static final double TURRET_SHAFT_INPUT_GEAR_TEETH = 20;
-    private static final double TURRET_SHAFT_OUTPUT_GEAR_TEETH = 65;
-    private static final double TURRET_RING_GEAR_TEETH = 169;
+    private static final double TURRET_SHAFT_OUTPUT_GEAR_TEETH = 62;
+    private static final double TURRET_RING_GEAR_TEETH = 160;
 
 
     // ───────────────────────── Calibration Constants ─────────────────────────
