@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.OpMode;
 import static org.firstinspires.ftc.teamcode.Configs.Globals.Constants.*;
+import static org.firstinspires.ftc.teamcode.Configs.Globals.Constants.RESET_GOAL;
+import static org.firstinspires.ftc.teamcode.Configs.Globals.Constants.RESET_GARDEN;
+import static org.firstinspires.ftc.teamcode.Configs.Globals.Constants.RESET_TOP;
 
 import com.pedropathing.api.PoseFactory;
 import com.pedropathing.drivetrain.DrivePowers;
@@ -131,6 +134,7 @@ public class Teleop extends OpMode {
 
     }
 
+
     // ═════════════════════════ LOOP ═════════════════════════
     @Override
     public void loop() {
@@ -138,6 +142,16 @@ public class Teleop extends OpMode {
         Scheduler.execute(); // runs anything scheduled — nothing's scheduled yet, but it's plugged in and ready
 
         robot.flywheel.setVelocity(ShooterConstants.flywheelSpeed(aim.getDistanceToGoal()));
+
+        if(gamepad2.dpad_down){
+            robot.follower.setPose(m(RESET_GARDEN));
+        }
+        if(gamepad2.dpad_up){
+            robot.follower.setPose(m(RESET_TOP));
+        }
+        if(gamepad2.dpad_left|| gamepad1.dpad_right){
+            robot.follower.setPose(m(RESET_GOAL));
+        }
 
 
         //region Drive

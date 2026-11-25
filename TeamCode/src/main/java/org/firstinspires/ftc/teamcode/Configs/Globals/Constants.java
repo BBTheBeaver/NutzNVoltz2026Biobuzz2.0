@@ -3,6 +3,9 @@ package org.firstinspires.ftc.teamcode.Configs.Globals;
 
 import android.graphics.Color;
 
+import com.pedropathing.api.PoseFactory;
+import com.pedropathing.math.Pose;
+
 public class Constants {
 
     // ═════════════════════════ LAUNCHER ═════════════════════════
@@ -32,6 +35,11 @@ public class Constants {
     // Blue alliance default — mirrored for Red in TeleOp initialize()
     public static double[] GOAL_POSE_BLUE = { 88.0, 47.0 }; // -50 for the other side
     public static double[] GOAL_POSE_RED = { 58.0, 47.0 }; // -50 for the other side
+
+    private static final PoseFactory poseFactory = PoseFactory.degrees();
+    public static final Pose RESET_GARDEN = poseFactory.of(6.75, 8.5, 90);
+    public static final Pose RESET_GOAL = poseFactory.of(37, 70.5, 0);
+    public static final Pose RESET_TOP = poseFactory.of(6.75, 133, 270);
 
 
     // ═════════════════════════ LAUNCH ZONES ═════════════════════════
