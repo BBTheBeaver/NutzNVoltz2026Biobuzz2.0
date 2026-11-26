@@ -23,6 +23,7 @@ public class Transfer {
     public void off() {
         motor.setPower(0);
     }
+    public void reverse(){motor.setPower(-1);}
 
     // Turns on the transfer
     public void on() {

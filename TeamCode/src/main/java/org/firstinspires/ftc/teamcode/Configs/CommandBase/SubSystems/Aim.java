@@ -10,19 +10,16 @@ import org.firstinspires.ftc.teamcode.Configs.Globals.Robot;
 public class Aim {
 
     // ═════════════════════════ CONSTANTS ═════════════════════════
-
     private final PIDController headingController = new PIDController(2.5, 0.0, 0.1);
 
 
     // ═════════════════════════ VARIABLES ═════════════════════════
-
     private double headingError = 0;
     private double distanceToGoal = 0;
-    private double angleOffSet  0;
+    private double angleOffset = 0;
 
 
     // ═════════════════════════ AIM UPDATE ═════════════════════════
-
     public double update(Robot robot, boolean headingLock, double[] goalPose, double stickTurn) {
         double x = robot.follower.pose().x();
         double y = robot.follower.pose().y();
@@ -30,12 +27,13 @@ public class Aim {
         double goalY = y > 75 ? 97.0 : 47.0;
 
         double realDistance = Math.hypot(goalPose[0] - x, goalY - y);
-        double tof = Math.max(0, ballFlightTime(realDistance));   // never negative
+        double tof = 0.5;
+        //Math.max(0, ballFlightTime(realDistance)); // never negative
 
         double vgx = goalPose[0] - robot.follower.velocity().vx * tof;
         double vgy = goalY - robot.follower.velocity().vy * tof;
 
-        double dx = vgx - x;     // robot to virtual goal
+        double dx = vgx - x; // robot to virtual goal
         double dy = vgy - y;
         distanceToGoal = Math.hypot(dx, dy);
 
@@ -50,7 +48,7 @@ public class Aim {
                 ? (dx * robot.follower.velocity().vy - dy * robot.follower.velocity().vx) / denom
                 : 0;
 
-        headingError = normalizeAngle(Math.atan2(dy, dx) + Math.PI - robot.follower.pose().heading() + angleOffSet);
+        headingError = normalizeAngle(Math.atan2(dy, dx) + Math.PI - robot.follower.pose().heading() + angleOffset);
 
         if (Math.abs(headingError) < Math.toRadians(1)) {
             return 0;
@@ -61,7 +59,6 @@ public class Aim {
 
 
     // ═════════════════════════ GETTERS ═════════════════════════
-
     public double getDistanceToGoal() {
         return distanceToGoal;
     }
@@ -70,9 +67,12 @@ public class Aim {
         return headingError;
     }
 
+    public void setAngleOffset(int x) {
+        angleOffset = x;
+    }
+
 
     // ═════════════════════════ HELPER METHODS ═════════════════════════
-
     private static double normalizeAngle(double angle) {
         return Math.atan2(Math.sin(angle), Math.cos(angle));
     }

@@ -22,8 +22,8 @@ public class Constants {
 
     // ═════════════════════════ SERVOS ═════════════════════════
 
-    public static final double GATE_OPEN = 90.0 / 300.0;
-    public static final double GATE_CLOSE = 0.0 / 300.0;
+    public static final double GATE_OPEN = 0;
+    public static final double GATE_CLOSE = 1;
 
     public static final double RAMP_DOWN = 90.0 / 300.0;
     public static final double RAMP_UP = 0.0 / 300.0;
