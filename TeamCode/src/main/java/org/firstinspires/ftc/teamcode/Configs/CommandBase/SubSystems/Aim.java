@@ -17,6 +17,7 @@ public class Aim {
     private double headingError = 0;
     private double distanceToGoal = 0;
     private double angleOffset = 0;
+    private double autoAngleOffset = 0;
 
 
     // ═════════════════════════ AIM UPDATE ═════════════════════════
@@ -48,7 +49,7 @@ public class Aim {
                 ? (dx * robot.follower.velocity().vy - dy * robot.follower.velocity().vx) / denom
                 : 0;
 
-        headingError = normalizeAngle(Math.atan2(dy, dx) + Math.PI - robot.follower.pose().heading() + angleOffset);
+        headingError = normalizeAngle(Math.atan2(dy, dx) + Math.PI - robot.follower.pose().heading() + angleOffset + autoAngleOffset);
 
         if (Math.abs(headingError) < Math.toRadians(1)) {
             return 0;
@@ -68,7 +69,10 @@ public class Aim {
     }
 
     public void setAngleOffset(int x) {
-        angleOffset = x;
+        angleOffset = Math.toRadians(x);
+    }
+    public void setAutoAngleOffset(int x) {
+        autoAngleOffset = Math.toRadians(x);
     }
 
 

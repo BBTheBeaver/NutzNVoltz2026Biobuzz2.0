@@ -61,6 +61,7 @@ public class Teleop extends OpMode {
     double turnPower;
     double flip;
     int angleOffset;
+    int autoAngleOffset;
 
 
     // ═════════════════════════ INTAKE / RAMP STATE ═════════════════════════
@@ -147,7 +148,24 @@ public class Teleop extends OpMode {
         robot.periodic();
         Scheduler.execute(); // runs anything scheduled — nothing's scheduled yet, but it's plugged in and ready
 
-
+        if(robot.follower.pose().x() < 23){
+            autoAngleOffset = 2;
+        }
+        else if(robot.follower.pose().x() < 47){
+            autoAngleOffset = 1;
+        }
+        else if(robot.follower.pose().x() < 72){
+            autoAngleOffset = 0;
+        }
+        else if(robot.follower.pose().x() < 95){
+            autoAngleOffset = -1;
+        }
+        else if(robot.follower.pose().x() < 118){
+            autoAngleOffset = -2;
+        }
+        else if(robot.follower.pose().x() < 141.5){
+            autoAngleOffset = -2;
+        }
 
         if (gamepad2.dpad_down) {
             robot.follower.setPose(m(RESET_GARDEN));
@@ -169,6 +187,9 @@ public class Teleop extends OpMode {
             angleOffset += 1;
         }
 
+        int sign = isBlue ? -1 : 1;
+        aim.setAutoAngleOffset(sign * autoAngleOffset);
+        aim.setAngleOffset(sign * angleOffset);
 
         //region Drive
         if (gamepad1.rightBumperWasPressed()) {
@@ -242,7 +263,7 @@ public class Teleop extends OpMode {
         //endregion
 
 
-        aim.setAngleOffset(angleOffset);
+
 
         robot.flywheel.setVelocity(ShooterConstants.flywheelSpeed(aim.getDistanceToGoal()));
 
