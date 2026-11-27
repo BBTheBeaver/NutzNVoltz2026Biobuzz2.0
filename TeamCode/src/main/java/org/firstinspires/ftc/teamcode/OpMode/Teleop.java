@@ -196,7 +196,7 @@ public class Teleop extends OpMode {
             headingLock = !headingLock;
         }
 
-        turnPower = aim.update(robot, headingLock, goalPose, gamepad1.right_stick_x);
+        turnPower = aim.update(robot, headingLock, goalPose, -gamepad1.right_stick_x);
 
         flip = isBlue ? 1 : -1;
 
@@ -232,7 +232,7 @@ public class Teleop extends OpMode {
 
         boolean full = colorSensor.full();
 
-        if (gamepad1.right_trigger > 0.5) {
+        if (gamepad1.left_trigger > 0.5) {
             intake.reverse();
         } else if (gamepad1.y) {
             intake.on();

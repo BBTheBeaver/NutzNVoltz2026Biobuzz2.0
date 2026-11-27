@@ -29,7 +29,7 @@ public class Shoot {
                     intake.on();
                 }),
 
-                waitMs(750),
+                waitMs(500),
 
                 instant(() -> {
                     gate.close();

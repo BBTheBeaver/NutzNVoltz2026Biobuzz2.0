@@ -35,30 +35,24 @@ public class SoloAuto implements AutoRoutine {
 
     // ═════════════════════════ PATH POSES ═════════════════════════
 
-    private final Pose start = poseFactory.of(53.5477, 8.8583, 90);
-
-    private final Pose path1 = poseFactory.of(6.812, 14.542, 270);
-    private final Pose point2 = poseFactory.of(6.6893, 9.3658, 270);
-
-    private final Pose point3Start = poseFactory.of(6.6893, 9.3658, 270);
-    private final Pose point3 = poseFactory.of(61.5704, 132.2545, 90);
+    private final Pose start = poseFactory.of(53.6703, 8.8583, 270);
+    private final Pose path1 = poseFactory.of(34.0329, 7.0604, 180);
+    private final Pose path1Control1 = poseFactory.of(61.8548, 25.9729, 0);
+    private final Pose point2 = poseFactory.of(8.5286, 7.0361, 180);
+    private final Pose point3Start = poseFactory.of(8.5286, 7.0361, 180);
+    private final Pose point3 = poseFactory.of(61.5704, 130, 90);
     private final Pose point3Control1 = poseFactory.of(22.9268, 91.2164, 0);
-
     private final Pose point4 = poseFactory.of(46.78, 117, 90);
     private final Pose point5 = poseFactory.of(46.783, 129.2663, 90);
-
-    private final Pose point6 = poseFactory.of(61.57, 132.25, 90);
+    private final Pose point6 = poseFactory.of(61.57, 130, 90);
     private final Pose point6Control1 = poseFactory.of(54.2433, 112.0087, 0);
-
-    private final Pose point7Start = poseFactory.of(61.57, 132.25, 90);
+    private final Pose point7Start = poseFactory.of(61.57, 130, 90);
     private final Pose point7 = poseFactory.of(22.5336, 46.9187, 180);
     private final Pose point7Control1 = poseFactory.of(64.5148, 117.5485, 0);
     private final Pose point7Control2 = poseFactory.of(5.4902, 99.0999, 0);
-
     private final Pose point8 = poseFactory.of(12.4396, 46.92, 180);
-
     private final Pose point9Start = poseFactory.of(12.4396, 46.92, 180);
-    private final Pose point9 = poseFactory.of(61.57, 132.25, 90);
+    private final Pose point9 = poseFactory.of(61.57, 130, 90);
     private final Pose point9Control1 = poseFactory.of(32.9974, 38.462, 0);
     private final Pose point9Control2 = poseFactory.of(31.1169, 84.6312, 0);
     private final Pose point9Control3 = poseFactory.of(15.9879, 110.8011, 0);
@@ -165,7 +159,7 @@ public class SoloAuto implements AutoRoutine {
     // ═════════════════════════ PATH 1–5 ═════════════════════════
 
     public Path path1() {
-        return Paths.line(start, path1).constant(path1);
+        return Paths.curve(start, path1Control1, path1).linear(start, path1);
     }
 
     public Path path2() {
@@ -184,9 +178,6 @@ public class SoloAuto implements AutoRoutine {
         return Paths.line(point4, point5).constant(point5);
     }
 
-
-    // ═════════════════════════ PATH 6–10 ═════════════════════════
-
     public Path path6() {
         return Paths.curve(point5, point6Control1, point6).constant(point6);
     }
@@ -202,6 +193,7 @@ public class SoloAuto implements AutoRoutine {
     public Path path9() {
         return Paths.curve(point9Start, point9Control1, point9Control2, point9Control3, point9Control4, point9).linear(point9Start, point9);
     }
+
 
     public Path path10() {
         if (AutoConfig.parkTop) {
