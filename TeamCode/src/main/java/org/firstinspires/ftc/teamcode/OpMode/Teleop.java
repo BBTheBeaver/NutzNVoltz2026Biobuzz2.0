@@ -233,11 +233,15 @@ public class Teleop extends OpMode {
 
         boolean full = colorSensor.full();
 
+        if(gamepad1.leftBumperWasPressed()){
+            intakeOn = !intakeOn;
+        }
+
         if (gamepad1.left_trigger > 0.5) {
             intake.reverse();
         } else if (gamepad1.y) {
             intake.on();
-        } else if (gamepad1.left_bumper && !full) {
+        } else if (intakeOn) {
             intake.on();
         } else {
             intake.off();
