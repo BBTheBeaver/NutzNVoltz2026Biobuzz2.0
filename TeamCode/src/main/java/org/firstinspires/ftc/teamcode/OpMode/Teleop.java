@@ -62,6 +62,7 @@ public class Teleop extends OpMode {
     double flip;
     int angleOffset;
     int autoAngleOffset;
+    int totalOffset;
 
 
     // ═════════════════════════ INTAKE / RAMP STATE ═════════════════════════
@@ -262,7 +263,7 @@ public class Teleop extends OpMode {
         }
         //endregion
 
-
+        totalOffset = angleOffset + autoAngleOffset;
 
 
         robot.flywheel.setVelocity(ShooterConstants.flywheelSpeed(aim.getDistanceToGoal()));
@@ -273,7 +274,9 @@ public class Teleop extends OpMode {
         telemetry.addData("Distance from goal: ", aim.getDistanceToGoal());
         telemetry.addData("X Pose: ", robot.follower.pose().x());
         telemetry.addData("Y Pose: ", robot.follower.pose().y());
-        telemetry.addData("Triggers", "left (%.2f), right (%.2f)", gamepad1.left_trigger, gamepad1.right_trigger);
+        telemetry.addData("Angle Offset ", totalOffset);
+        telemetry.addData("Manual Angle Offset ", angleOffset);
+        telemetry.addData("Auto Angle Offset ", autoAngleOffset);
         telemetry.addData("Heading Error (deg)", Math.toDegrees(aim.getHeadingError()));
         telemetry.addData("Heading", "%.1f°", Math.toDegrees(robot.follower.pose().heading()));
         telemetry.addData("Loop Hz", robot.getLoopTimeHz());
